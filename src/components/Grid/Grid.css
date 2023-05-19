@@ -1,0 +1,25 @@
+.grid-container {
+  width: 100%;
+}
+
+.cells-container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.cell {
+  width: 20px;
+  height: 20px;
+  background-color: #d9d9d9;
+  margin: 2px;
+  /* border: 2px solid; */
+}
+
+.cell img {
+  width: 10%;
+}
+
+.cell:hover {
+  background-color: gray;
+}
