@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import "./Home.css";
 // import DijkstrasAlgo from "../../Algorithms/Dijsktra";
-import bfs from "../../Algorithms/bfs";
-import bfsWillWalls from "../../Algorithms/bfsWithWalls";
+// import bfs from "../../Algorithms/bfs";
+import bfsWithWalls from "../../Algorithms/bfsWithWalls";
+import dfsWithWalls from "../../Algorithms/dfsWithWalls";
 import swal from "sweetalert";
+import Animation1 from "../../Animations/Animation1";
 
 export default function Home() {
-  const n = 20;
-  const m = 64;
+  const n = 25;
+  const m = 71;
   let arr = new Array(n);
   for (let i = 0; i < n; i++) {
     arr[i] = new Array(m);
@@ -57,9 +59,8 @@ export default function Home() {
   }
 
   function createMaze() {
-    console.log("Try to create maze");
     let temp = [];
-    for (let i = 0; i < 250; i++) {
+    for (let i = 0; i < 300; i++) {
       // const a = 0;
       const b = n * m;
       let x = Math.floor(b * Math.random());
@@ -83,26 +84,38 @@ export default function Home() {
     }
   }
 
-  function Dijkstra() {
-    const cells = document.querySelectorAll(".cell");
+  function bfs() {
+    // const cells = document.querySelectorAll(".cell");
     // const path = bfs(source.x, source.y, target.x, target.y);
     // console.log(path);
-    const path = bfsWillWalls(source.x, source.y, target.x, target.y, walls);
+    const path = bfsWithWalls(source.x, source.y, target.x, target.y, walls);
 
     if (path.length === 0) {
-      swal("Oops!", "Target can't be reached", "error");
+      swal("Oops!", "Target can't be reached", "warning");
+    }
+    Animation1(source, target, path);
+
+    // for (let i = 0; i < path.length; i++) {
+    //   const x = Math.floor(path[i] / m);
+    //   const y = path[i] % m;
+
+    //   if (x === source.x && y === source.y) continue;
+    //   if (x === target.x && y === target.y) continue;
+
+    //   const node = x * m + y;
+    //   cells[node].style.backgroundColor = "lightgreen";
+    // }
+  }
+
+  function dfs() {
+    // const cells = document.querySelectorAll(".cell");
+    const path = dfsWithWalls(source.x, source.y, target.x, target.y, walls);
+
+    if (path.length === 0) {
+      swal("Oops!", "Target can't be reached", "warning");
     }
 
-    for (let i = 0; i < path.length; i++) {
-      const x = Math.floor(path[i] / m);
-      const y = path[i] % m;
-
-      if (x === source.x && y === source.y) continue;
-      if (x === target.x && y === target.y) continue;
-
-      const node = x * m + y;
-      cells[node].style.backgroundColor = "lightgreen";
-    }
+    Animation1(source, target, path);
   }
 
   return (
@@ -111,6 +124,7 @@ export default function Home() {
       <div className="nav-container">
         <div className="nav-item">
           <div className="heading-section">Path Finder</div>
+          <div className="stop-btn">Stop Animation</div>
         </div>
         <div className="nav-item">
           <div className="control-section">
@@ -132,8 +146,11 @@ export default function Home() {
             </div>
           </div>
           <div className="algo-section">
-            <div className="algo-btn" onClick={Dijkstra}>
-              Dijkstra Algo
+            <div className="algo-btn" onClick={bfs}>
+              BFS Algo
+            </div>
+            <div className="algo-btn" onClick={dfs}>
+              DFS Algo
             </div>
             <div className="algo-btn">Prim's Algo</div>
           </div>

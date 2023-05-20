@@ -1,5 +1,5 @@
-const n = 20;
-const m = 64;
+const n = 25;
+const m = 71;
 
 // Previos or Same as BFS
 
@@ -35,7 +35,7 @@ for (let i = 0; i < totalNodes; i++) {
 
 let ans = [];
 
-export default function bfsWillWalls(sx, sy, tx, ty, walls) {
+export default function bfsWithWalls(sx, sy, tx, ty, walls) {
   const source = sx * m + sy;
   const target = tx * m + ty;
   //   console.log(walls);
@@ -45,7 +45,7 @@ export default function bfsWillWalls(sx, sy, tx, ty, walls) {
 
   ans.reverse();
 
-  //   console.log(ans);
+  // console.log(ans);
   return ans;
 }
 
