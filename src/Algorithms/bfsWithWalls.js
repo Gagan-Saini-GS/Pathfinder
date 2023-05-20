@@ -1,6 +1,5 @@
-const n = 25;
-const m = 71;
-
+const n = 21;
+const m = 57;
 // Previos or Same as BFS
 
 let visited = new Array(n * m);
@@ -35,13 +34,12 @@ for (let i = 0; i < totalNodes; i++) {
 
 let ans = [];
 
-export default function bfsWithWalls(sx, sy, tx, ty, walls) {
+export default async function bfsWithWalls(sx, sy, tx, ty, walls) {
   const source = sx * m + sy;
   const target = tx * m + ty;
   //   console.log(walls);
 
-  getPathBFSWalls(source, target, walls);
-  // await getPathDFS(source, target);
+  await getPathBFSWalls(source, target, walls);
 
   ans.reverse();
 
@@ -49,7 +47,8 @@ export default function bfsWithWalls(sx, sy, tx, ty, walls) {
   return ans;
 }
 
-function getPathBFSWalls(sv, ev, temp) {
+async function getPathBFSWalls(sv, ev, temp) {
+  const cells = document.querySelectorAll(".cell");
   let seen = new Array(totalNodes);
   let walls = new Array(totalNodes);
   for (let i = 0; i < totalNodes; i++) {
@@ -75,8 +74,19 @@ function getPathBFSWalls(sv, ev, temp) {
 
     for (let k = 0; k < edges[i][j].length; k++) {
       const node = edges[i][j][k];
+      let animationID;
+      const temp = new Promise((resolve, reject) => {
+        animationID = setInterval(() => {
+          // cells[node].style.backgroundColor = "#9345c8";
+          cells[node].style.backgroundColor = "rgb(175, 216, 248)";
+          resolve();
+        }, 5);
+      });
+
+      await temp;
+      clearInterval(animationID);
+
       if (walls[node] === 1) {
-        // console.log(node);
         continue;
       }
 
@@ -86,10 +96,6 @@ function getPathBFSWalls(sv, ev, temp) {
         visited[ev] = true;
         break;
       }
-
-      //   if (node === 131) {
-      //     console.log("Continue is not working");
-      //   }
 
       if (!visited[node]) {
         pendingVertices.push(node);

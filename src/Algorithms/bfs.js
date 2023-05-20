@@ -1,5 +1,5 @@
-const n = 20;
-const m = 64;
+const n = 21;
+const m = 57;
 
 let visited = new Array(n * m);
 const totalNodes = n * m; // Number of total nodes

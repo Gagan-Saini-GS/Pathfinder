@@ -8,8 +8,8 @@ import swal from "sweetalert";
 import Animation1 from "../../Animations/Animation1";
 
 export default function Home() {
-  const n = 25;
-  const m = 71;
+  const n = 21;
+  const m = 57;
   let arr = new Array(n);
   for (let i = 0; i < n; i++) {
     arr[i] = new Array(m);
@@ -84,15 +84,22 @@ export default function Home() {
     }
   }
 
-  function bfs() {
+  async function bfs() {
     // const cells = document.querySelectorAll(".cell");
     // const path = bfs(source.x, source.y, target.x, target.y);
     // console.log(path);
-    const path = bfsWithWalls(source.x, source.y, target.x, target.y, walls);
+    const path = await bfsWithWalls(
+      source.x,
+      source.y,
+      target.x,
+      target.y,
+      walls
+    );
 
     if (path.length === 0) {
       swal("Oops!", "Target can't be reached", "warning");
     }
+
     Animation1(source, target, path);
 
     // for (let i = 0; i < path.length; i++) {
@@ -107,9 +114,15 @@ export default function Home() {
     // }
   }
 
-  function dfs() {
+  async function dfs() {
     // const cells = document.querySelectorAll(".cell");
-    const path = dfsWithWalls(source.x, source.y, target.x, target.y, walls);
+    const path = await dfsWithWalls(
+      source.x,
+      source.y,
+      target.x,
+      target.y,
+      walls
+    );
 
     if (path.length === 0) {
       swal("Oops!", "Target can't be reached", "warning");
@@ -124,7 +137,6 @@ export default function Home() {
       <div className="nav-container">
         <div className="nav-item">
           <div className="heading-section">Path Finder</div>
-          <div className="stop-btn">Stop Animation</div>
         </div>
         <div className="nav-item">
           <div className="control-section">
@@ -165,6 +177,8 @@ export default function Home() {
             return item.map((cell, column) => {
               return (
                 <div key={column} className="cell" onClick={mark}>
+                  {/* inside div is used for animation */}
+                  {/* <span className="inside"></span> */}
                   <div className="value">
                     <span className="value-x">{cell.i}</span>
                     <span className="value-y">{cell.j}</span>

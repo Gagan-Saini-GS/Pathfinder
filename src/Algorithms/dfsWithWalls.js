@@ -1,6 +1,5 @@
-const n = 25;
-const m = 71;
-
+const n = 21;
+const m = 57;
 // Previos or Same as BFS
 
 let visited = new Array(n * m);
@@ -35,7 +34,7 @@ for (let i = 0; i < totalNodes; i++) {
 
 let ans = [];
 
-export default function dfsWithWalls(sx, sy, tx, ty, wallArray) {
+export default async function dfsWithWalls(sx, sy, tx, ty, wallArray) {
   const source = sx * m + sy;
   const target = tx * m + ty;
   //   console.log(walls);
@@ -48,13 +47,14 @@ export default function dfsWithWalls(sx, sy, tx, ty, wallArray) {
     walls[wallArray[i]] = 1; // 1 denote the blockage or wall
   }
 
-  getPathDFSWalls(source, target, walls);
+  await getPathDFSWalls(source, target, walls);
   ans.reverse();
-  //   console.log(ans);
+  console.log(ans);
   return ans;
 }
 
-function getPathDFSWalls(sv, ev, walls) {
+async function getPathDFSWalls(sv, ev, walls) {
+  const cells = document.querySelectorAll(".cell");
   if (visited[sv]) return;
   if (walls[sv] === 1) return;
 
@@ -73,7 +73,22 @@ function getPathDFSWalls(sv, ev, walls) {
 
   for (let i = 0; i < edges[x][y].length; i++) {
     const newNode = edges[x][y][i];
-    getPathDFSWalls(newNode, ev, walls);
+
+    let animationID;
+    const temp = new Promise((resolve, reject) => {
+      animationID = setInterval(() => {
+        // let temp = edges[x][y][i];
+        // cells[newNode].style.backgroundColor = "#9345c8";
+        cells[newNode].style.backgroundColor = "rgb(175, 216, 248)";
+        resolve();
+      }, 5);
+      //   idArr.push(animationID);
+    });
+
+    await temp;
+    clearInterval(animationID);
+
+    await getPathDFSWalls(newNode, ev, walls);
 
     if (ans.length !== 0) {
       if (newNode !== ev) {

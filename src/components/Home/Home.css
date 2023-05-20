@@ -5,6 +5,7 @@
   flex-direction: column;
   align-items: center;
   margin-bottom: 20px;
+  width: 100%;
 }
 
 .nav-item {
@@ -23,7 +24,7 @@
 }
 
 .control-section {
-  width: 25%;
+  width: 40%;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -42,7 +43,7 @@
 }
 
 .algo-section {
-  width: 25%;
+  width: 50%;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -59,7 +60,8 @@
 }
 
 .grid-container {
-  width: 100%;
+  width: 99%;
+  margin: auto;
 }
 
 .cells-container {
@@ -69,12 +71,15 @@
 }
 
 .cell {
-  width: 20px;
-  height: 20px;
-  background-color: var(--white);
-  border: 1px solid var(--black);
+  width: 25px;
+  height: 25px;
+  /* background-color: var(--white); */
+  background-color: #fbfbfb;
+  border: 1px solid var(--lightblue);
+  /* border: 1px solid rgb(67, 118, 200); */
   /* margin: 2px; */
   /* border: 2px solid; */
+  /* transition: all 100ms; */
 }
 
 .cell img {
@@ -85,9 +90,14 @@
 
 .cell:hover {
   background-color: var(--gray);
+  /* transform: scale(1.25); */
 }
 
 .value {
+  display: none;
+}
+
+.inside {
   display: none;
 }
 

@@ -1,7 +1,8 @@
-// const n = 25;
-// const m = 71;
+// const n = 21;
+// const m = 57;
 
 export default async function Animation1(source, target, path) {
+  //   console.log("Path animation");
   const allID = [];
 
   const cells = document.querySelectorAll(".cell");
@@ -14,8 +15,8 @@ export default async function Animation1(source, target, path) {
       //   if (x === target.x && y === target.y) continue;
 
       //   const node = x * m + y;
-      //   cells[node].style.backgroundColor = "#588b76";
-      cells[path[i]].style.backgroundColor = "#588b76";
+      cells[path[i]].style.backgroundColor = "rgb(255, 254, 106)";
+      //   cells[path[i]].style.backgroundColor = "#588b76";
     }, i * 50);
 
     allID.push(animatationID);
