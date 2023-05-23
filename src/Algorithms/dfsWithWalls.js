@@ -2,11 +2,11 @@ const n = 21;
 const m = 57;
 // Previos or Same as BFS
 
-let visited = new Array(n * m);
 const totalNodes = n * m; // Number of total nodes
 // const totalEdges = (n - 1) * m + n * (m - 1); // Number of total edges
+let visited = new Array(totalNodes);
 
-let arr = new Array(n * m);
+// let arr = new Array(n * m);
 let edges = new Array(n);
 for (let i = 0; i < n; i++) {
   edges[i] = new Array(m);
@@ -28,7 +28,7 @@ for (let i = 0; i < n; i++) {
 // console.log(edges);
 
 for (let i = 0; i < totalNodes; i++) {
-  arr[i] = i;
+  // arr[i] = i;
   visited[i] = false;
 }
 
@@ -73,6 +73,10 @@ async function getPathDFSWalls(sv, ev, walls) {
 
   for (let i = 0; i < edges[x][y].length; i++) {
     const newNode = edges[x][y][i];
+
+    if (walls[newNode] === 1) {
+      continue;
+    }
 
     let animationID;
     const temp = new Promise((resolve, reject) => {

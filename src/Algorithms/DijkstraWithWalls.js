@@ -8,11 +8,13 @@ const totalNodes = n * m;
 let visited = new Array(totalNodes);
 let dist = new Array(totalNodes);
 let isWeighted = new Array(totalNodes);
+let walls = new Array(totalNodes);
 
 for (let i = 0; i < totalNodes; i++) {
   visited[i] = false;
   isWeighted[i] = false;
   dist[i] = 1e9 + 7;
+  walls[i] = -1;
 }
 
 let edges = new Array(n);
@@ -33,7 +35,7 @@ for (let i = 0; i < n; i++) {
 let path = [];
 
 // Function
-export default async function Dijkstra(sx, sy, tx, ty, weights) {
+export default async function Dijkstra(sx, sy, tx, ty, wallArray, weights) {
   const source = sx * m + sy;
   const target = tx * m + ty;
 
@@ -41,15 +43,18 @@ export default async function Dijkstra(sx, sy, tx, ty, weights) {
     isWeighted[weights[i]] = true;
   }
 
-  await shortestPath(source, target);
+  for (let i = 0; i < wallArray.length; i++) {
+    walls[wallArray[i]] = 1;
+  }
 
+  await shortestPath(source, target, walls);
   await getPath(source, target);
   path.reverse();
 
   return path;
 }
 
-async function shortestPath(sv, ev) {
+async function shortestPath(sv, ev, walls) {
   dist[sv] = 0;
 
   let q = [];
@@ -63,6 +68,9 @@ async function shortestPath(sv, ev) {
 
     for (let i = 0; i < edges[x][y].length; i++) {
       const nextNode = edges[x][y][i];
+      if (walls[nextNode] === 1) {
+        continue;
+      }
       let newDist = dist[currNode] + 1;
 
       if (isWeighted[nextNode] === true) {

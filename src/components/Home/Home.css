@@ -80,6 +80,8 @@
   /* margin: 2px; */
   /* border: 2px solid; */
   /* transition: all 100ms; */
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .cell img {

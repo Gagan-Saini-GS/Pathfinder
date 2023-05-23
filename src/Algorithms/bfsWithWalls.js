@@ -2,11 +2,11 @@ const n = 21;
 const m = 57;
 // Previos or Same as BFS
 
-let visited = new Array(n * m);
 const totalNodes = n * m; // Number of total nodes
 // const totalEdges = (n - 1) * m + n * (m - 1); // Number of total edges
+let visited = new Array(totalNodes);
 
-let arr = new Array(n * m);
+// let arr = new Array(n * m);
 let edges = new Array(n);
 for (let i = 0; i < n; i++) {
   edges[i] = new Array(m);
@@ -28,7 +28,7 @@ for (let i = 0; i < n; i++) {
 // console.log(edges);
 
 for (let i = 0; i < totalNodes; i++) {
-  arr[i] = i;
+  // arr[i] = i;
   visited[i] = false;
 }
 
@@ -74,6 +74,10 @@ async function getPathBFSWalls(sv, ev, temp) {
 
     for (let k = 0; k < edges[i][j].length; k++) {
       const node = edges[i][j][k];
+      if (walls[node] === 1) {
+        continue;
+      }
+
       let animationID;
       const temp = new Promise((resolve, reject) => {
         animationID = setInterval(() => {
@@ -85,10 +89,6 @@ async function getPathBFSWalls(sv, ev, temp) {
 
       await temp;
       clearInterval(animationID);
-
-      if (walls[node] === 1) {
-        continue;
-      }
 
       if (node === ev) {
         // frontvertices is the parent the node
@@ -119,63 +119,3 @@ async function getPathBFSWalls(sv, ev, temp) {
     ans.push(x);
   }
 }
-
-// function bfs(sx, sy, tx, ty) {
-//   const source = sx * m + sy;
-//   const target = tx * m + ty;
-
-//   getPathBFS(source, target);
-//   // await getPathDFS(source, target);
-
-//   ans.reverse();
-//   return ans;
-// }
-
-// function getPathBFS(sv, ev) {
-//   let seen = new Array(totalNodes);
-//   for (let i = 0; i < totalNodes; i++) {
-//     seen[i] = -1;
-//   }
-
-//   let pendingVertices = []; // Works as queue
-
-//   pendingVertices.push(sv);
-//   visited[sv] = true;
-
-//   while (pendingVertices.length !== 0) {
-//     let frontVertices = pendingVertices.shift();
-//     let i = Math.floor(frontVertices / m);
-//     let j = frontVertices % m;
-
-//     for (let k = 0; k < edges[i][j].length; k++) {
-//       const node = edges[i][j][k];
-
-//       if (node === ev) {
-//         // frontvertices is the parent the node
-//         seen[node] = frontVertices;
-//         visited[ev] = true;
-//         break;
-//       }
-
-//       if (!visited[node]) {
-//         pendingVertices.push(node);
-//         // frontvertices is the parent the node
-//         seen[node] = frontVertices;
-//         visited[node] = true;
-//       }
-//     }
-
-//     if (visited[ev]) {
-//       break;
-//     }
-//   }
-
-//   if (!visited[ev]) return;
-//   ans.push(ev);
-
-//   let x = ev;
-//   while (x !== sv) {
-//     x = seen[x];
-//     ans.push(x);
-//   }
-// }
