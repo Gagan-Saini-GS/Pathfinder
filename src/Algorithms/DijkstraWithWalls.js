@@ -55,6 +55,7 @@ export default async function Dijkstra(sx, sy, tx, ty, wallArray, weights) {
 }
 
 async function shortestPath(sv, ev, walls) {
+  const cells = document.querySelectorAll(".cell");
   dist[sv] = 0;
 
   let q = [];
@@ -72,6 +73,18 @@ async function shortestPath(sv, ev, walls) {
         continue;
       }
       let newDist = dist[currNode] + 1;
+
+      let animationID;
+      const temp = new Promise((resolve, reject) => {
+        animationID = setInterval(() => {
+          // cells[node].style.backgroundColor = "#9345c8";
+          cells[nextNode].style.backgroundColor = "rgb(175, 216, 248)";
+          resolve();
+        }, 5);
+      });
+
+      await temp;
+      clearInterval(animationID);
 
       if (isWeighted[nextNode] === true) {
         newDist += 10; // 10 (because it is weighted)

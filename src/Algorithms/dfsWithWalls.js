@@ -6,7 +6,6 @@ const totalNodes = n * m; // Number of total nodes
 // const totalEdges = (n - 1) * m + n * (m - 1); // Number of total edges
 let visited = new Array(totalNodes);
 
-// let arr = new Array(n * m);
 let edges = new Array(n);
 for (let i = 0; i < n; i++) {
   edges[i] = new Array(m);
@@ -25,10 +24,7 @@ for (let i = 0; i < n; i++) {
   }
 }
 
-// console.log(edges);
-
 for (let i = 0; i < totalNodes; i++) {
-  // arr[i] = i;
   visited[i] = false;
 }
 
@@ -48,6 +44,7 @@ export default async function dfsWithWalls(sx, sy, tx, ty, wallArray) {
   }
 
   await getPathDFSWalls(source, target, walls);
+  ans.push(source);
   ans.reverse();
   console.log(ans);
   return ans;
@@ -86,7 +83,6 @@ async function getPathDFSWalls(sv, ev, walls) {
         cells[newNode].style.backgroundColor = "rgb(175, 216, 248)";
         resolve();
       }, 5);
-      //   idArr.push(animationID);
     });
 
     await temp;

@@ -80,13 +80,14 @@ export default function Home() {
     const cells = document.querySelectorAll(".cell");
 
     for (let i = 0; i < temp.length; i++) {
-      cells[temp[i]].style.backgroundImage = `url("./images/wall.png")`;
-      // cells[temp[i]].style.backgroundColor = "red";
-      const elem = cells[temp[i]];
-      const img = document.createElement("img");
-      img.src = "./images/wall.png";
+      // cells[temp[i]].style.backgroundImage = `url("./images/wall.png")`;
+      cells[temp[i]].style.backgroundColor = "#212a3e";
+      cells[temp[i]].style.border = "1px solid #212a3e";
+      // const elem = cells[temp[i]];
+      // const img = document.createElement("img");
+      // img.src = "./images/wall.png";
 
-      elem.appendChild(img);
+      // elem.appendChild(img);
 
       // marking them as wall
       const wallNode = temp[i];

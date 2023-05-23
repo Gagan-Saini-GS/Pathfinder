@@ -110,6 +110,7 @@ async function getPathBFSWalls(sv, ev, temp) {
     }
   }
 
+  //Getting path
   if (!visited[ev]) return;
   ans.push(ev);
 

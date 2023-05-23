@@ -10,13 +10,12 @@ export default async function Animation1(source, target, path) {
     const animatationID = setInterval(() => {
       //   const x = Math.floor(path[i] / m);
       //   const y = path[i] % m;
-
       //   if (x === source.x && y === source.y) continue;
       //   if (x === target.x && y === target.y) continue;
-
       //   const node = x * m + y;
-      cells[path[i]].style.backgroundColor = "rgb(255, 254, 106)";
-      //   cells[path[i]].style.backgroundColor = "#588b76";
+
+      cells[path[i]].style.backgroundColor = "rgb(255,254,106";
+      cells[path[i]].style.border = "1px solid rgb(255, 254, 106)";
     }, i * 50);
 
     allID.push(animatationID);
