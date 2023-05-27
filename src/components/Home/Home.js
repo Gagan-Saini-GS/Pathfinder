@@ -1,16 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Home.css";
 // import bfs from "../../Algorithms/bfs";
 import bfsWithWalls from "../../Algorithms/bfsWithWalls";
 import dfsWithWalls from "../../Algorithms/dfsWithWalls";
-import Dijkstra from "../../Algorithms/Dijsktra";
+// import Dijkstra from "../../Algorithms/Dijsktra";
 import DijkstraWithWalls from "../../Algorithms/DijkstraWithWalls";
 import swal from "sweetalert";
 import Animation1 from "../../Animations/Animation1";
 
 export default function Home() {
-  const n = 21;
-  const m = 57;
+  const n = 20;
+  const m = 50;
   let arr = new Array(n);
   for (let i = 0; i < n; i++) {
     arr[i] = new Array(m);
@@ -20,10 +20,26 @@ export default function Home() {
   }
 
   const [color, setColor] = useState("red");
-  const [source, setSource] = useState();
-  const [target, setTarget] = useState();
+  const [source, setSource] = useState({ x: 10, y: 15 });
+  const [target, setTarget] = useState({ x: 10, y: 35 });
   const [walls, setWalls] = useState([]);
   const [weights, setWeights] = useState([]);
+
+  useEffect(() => {
+    console.log("Effect");
+    const cells = document.querySelectorAll(".cell");
+    const source = 10 * m + 15;
+    const target = 10 * m + 35;
+
+    const sourceImg = document.createElement("img");
+    sourceImg.src = "./images/location.png";
+
+    const targetImg = document.createElement("img");
+    targetImg.src = "./images/bulleye.png";
+
+    cells[source].appendChild(sourceImg);
+    cells[target].appendChild(targetImg);
+  }, []);
 
   function mark(event) {
     const elem = event.target;
@@ -97,17 +113,26 @@ export default function Home() {
 
   function createWeightMaze() {
     let temp = [];
+    let isWeighted = new Array(n * m);
+    const totalNodes = n * m;
+    for (let i = 0; i < totalNodes; i++) {
+      isWeighted[i] = false;
+    }
+
     for (let i = 0; i < 300; i++) {
       // const a = 0;
       const b = n * m;
       let x = Math.floor(b * Math.random());
-      temp.push(x);
+      if (isWeighted[x] === false) {
+        isWeighted[x] = true;
+        temp.push(x);
+      }
     }
 
     const cells = document.querySelectorAll(".cell");
 
     for (let i = 0; i < temp.length; i++) {
-      cells[temp[i]].style.backgroundImage = `url("./images/weight.png")`;
+      // cells[temp[i]].style.backgroundImage = `url("./images/weight.png")`;
       // cells[temp[i]].style.backgroundColor = "red";
       const elem = cells[temp[i]];
       const img = document.createElement("img");
@@ -122,10 +147,27 @@ export default function Home() {
     }
   }
 
+  function clearWeights() {
+    const cells = document.querySelectorAll(".cell");
+    const len = weights.length;
+    for (let i = 0; i < len; i++) {
+      const elem = cells[weights[i]];
+
+      if (elem.hasChildNodes()) {
+        elem.removeChild(elem.children[1]);
+      }
+    }
+    console.log(weights);
+  }
+
   async function bfs() {
     // const cells = document.querySelectorAll(".cell");
     // const path = bfs(source.x, source.y, target.x, target.y);
     // console.log(path);
+
+    // Because BFS is not weighted.
+    if (weights.length > 0) clearWeights();
+
     const path = await bfsWithWalls(
       source.x,
       source.y,
@@ -161,6 +203,9 @@ export default function Home() {
       target.y,
       walls
     );
+
+    // Because DFS is not weighted.
+    if (weights.length > 0) clearWeights();
 
     if (path.length === 0) {
       swal("Oops!", "Target can't be reached", "warning");
@@ -245,7 +290,7 @@ export default function Home() {
 
       {/* Grid */}
 
-      <div className="grid-container">
+      {/* <div className="grid-container">
         <div className="cells-container">
           {arr.map((item, row) => {
             return item.map((cell, column) => {
@@ -260,6 +305,31 @@ export default function Home() {
             });
           })}
         </div>
+      </div> */}
+
+      {/* Table can be used in responsivness */}
+      {/* Thats why I changed a normal div structure to table */}
+      <div className="grid-container">
+        <table className="cells-container">
+          <tbody>
+            {arr.map((item, row) => {
+              return (
+                <tr key={row}>
+                  {item.map((cell, column) => {
+                    return (
+                      <td key={column} className="cell" onClick={mark}>
+                        <div className="value">
+                          <span className="value-x">{cell.i}</span>
+                          <span className="value-y">{cell.j}</span>
+                        </div>
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );

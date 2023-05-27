@@ -1,7 +1,7 @@
 // Preprocessing & Decleration
 
-const n = 21;
-const m = 57;
+const n = 20;
+const m = 50;
 
 const totalNodes = n * m;
 
