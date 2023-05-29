@@ -8,6 +8,9 @@ let visited = new Array(totalNodes);
 
 // let arr = new Array(n * m);
 let edges = new Array(n);
+let seen = new Array(totalNodes);
+let walls = new Array(totalNodes);
+
 for (let i = 0; i < n; i++) {
   edges[i] = new Array(m);
   for (let j = 0; j < m; j++) {
@@ -30,14 +33,29 @@ for (let i = 0; i < n; i++) {
 for (let i = 0; i < totalNodes; i++) {
   // arr[i] = i;
   visited[i] = false;
+  seen[i] = -1;
+  walls[i] = -1;
 }
 
 let ans = [];
+
+async function restart() {
+  for (let i = 0; i < totalNodes; i++) {
+    // arr[i] = i;
+    visited[i] = false;
+    seen[i] = -1;
+    walls[i] = -1;
+  }
+
+  ans = [];
+}
 
 export default async function bfsWithWalls(sx, sy, tx, ty, walls) {
   const source = sx * m + sy;
   const target = tx * m + ty;
   //   console.log(walls);
+
+  await restart();
 
   await getPathBFSWalls(source, target, walls);
 
@@ -48,13 +66,8 @@ export default async function bfsWithWalls(sx, sy, tx, ty, walls) {
 }
 
 async function getPathBFSWalls(sv, ev, temp) {
+  console.log("BFS Called");
   const cells = document.querySelectorAll(".cell");
-  let seen = new Array(totalNodes);
-  let walls = new Array(totalNodes);
-  for (let i = 0; i < totalNodes; i++) {
-    seen[i] = -1;
-    walls[i] = -1; // -1 means not blocked
-  }
 
   for (let i = 0; i < temp.length; i++) {
     walls[temp[i]] = 1; // 1 denote the blockage or wall
@@ -90,6 +103,7 @@ async function getPathBFSWalls(sv, ev, temp) {
       await temp;
       clearInterval(animationID);
 
+      // console.log("Called");
       if (node === ev) {
         // frontvertices is the parent the node
         seen[node] = frontVertices;

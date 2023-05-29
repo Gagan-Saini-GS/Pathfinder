@@ -26,7 +26,7 @@ export default function Home() {
   const [weights, setWeights] = useState([]);
 
   useEffect(() => {
-    console.log("Effect");
+    // console.log("Effect");
     const cells = document.querySelectorAll(".cell");
     const source = 10 * m + 15;
     const target = 10 * m + 35;
@@ -44,14 +44,26 @@ export default function Home() {
   function mark(event) {
     const elem = event.target;
     const img = document.createElement("img");
+    const cells = document.querySelectorAll(".cell");
     const x = Number(event.target.childNodes[0].childNodes[0].innerText);
     const y = Number(event.target.childNodes[0].childNodes[1].innerText);
     // console.log({ x, y });
 
     if (color === "red") {
+      const node = cells[source.x * m + source.y];
+      // cells[node];
+
+      if (node.hasChildNodes()) {
+        node.removeChild(node.children[1]);
+      }
       img.src = "./images/location.png";
       setSource({ x, y });
     } else if (color === "green") {
+      const node = cells[target.x * m + target.y];
+      if (node.hasChildNodes()) {
+        node.removeChild(node.children[1]);
+      }
+
       img.src = "./images/bulleye.png";
       setTarget({ x, y });
     } else if (color === "black") {
@@ -59,7 +71,8 @@ export default function Home() {
       // console.log(wallNode);
 
       setWalls((prev) => [...prev, wallNode]);
-      img.src = "./images/wall.png";
+      // img.src = "./images/wall.png";
+      cells[wallNode].style.backgroundColor = "#212a3e";
     } else if (color === "blue") {
       const weightNode = x * m + y;
       setWeights((prev) => [...prev, weightNode]);
@@ -115,9 +128,12 @@ export default function Home() {
     let temp = [];
     let isWeighted = new Array(n * m);
     const totalNodes = n * m;
+
     for (let i = 0; i < totalNodes; i++) {
       isWeighted[i] = false;
     }
+    isWeighted[source.x * m + source.y] = true;
+    isWeighted[target.x * m + target.y] = true;
 
     for (let i = 0; i < 300; i++) {
       // const a = 0;
@@ -157,7 +173,7 @@ export default function Home() {
         elem.removeChild(elem.children[1]);
       }
     }
-    console.log(weights);
+    // console.log(weights);
   }
 
   async function bfs() {
@@ -168,6 +184,7 @@ export default function Home() {
     // Because BFS is not weighted.
     if (weights.length > 0) clearWeights();
 
+    // console.log("BFS");
     const path = await bfsWithWalls(
       source.x,
       source.y,
@@ -240,6 +257,19 @@ export default function Home() {
     Animation1(source, target, path);
   }
 
+  function clearWeightsAndWalls() {
+    const cells = document.querySelectorAll(".cell");
+    const totalNodes = n * m;
+
+    for (let i = 0; i < totalNodes; i++) {
+      cells[i].style.backgroundColor = "#fbfbfb";
+      cells[i].style.border = "1px solid #5883d8";
+    }
+
+    setWalls([]);
+    console.log("Path Cleared");
+  }
+
   return (
     <div className="home-container">
       {/* Navbar */}
@@ -283,6 +313,9 @@ export default function Home() {
             </div>
             <div className="algo-btn" onClick={DijsktraAlgo}>
               Dijkstra Algo
+            </div>
+            <div className="algo-btn" onClick={clearWeightsAndWalls}>
+              Clear Weights & Walls
             </div>
           </div>
         </div>

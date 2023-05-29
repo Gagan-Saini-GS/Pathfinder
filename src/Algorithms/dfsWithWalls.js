@@ -5,6 +5,7 @@ const m = 50;
 const totalNodes = n * m; // Number of total nodes
 // const totalEdges = (n - 1) * m + n * (m - 1); // Number of total edges
 let visited = new Array(totalNodes);
+let walls = new Array(totalNodes);
 
 let edges = new Array(n);
 for (let i = 0; i < n; i++) {
@@ -26,18 +27,26 @@ for (let i = 0; i < n; i++) {
 
 for (let i = 0; i < totalNodes; i++) {
   visited[i] = false;
+  walls[i] = -1;
 }
 
 let ans = [];
+
+async function restart() {
+  for (let i = 0; i < totalNodes; i++) {
+    // arr[i] = i;
+    visited[i] = false;
+    walls[i] = -1;
+  }
+
+  ans = [];
+}
 
 export default async function dfsWithWalls(sx, sy, tx, ty, wallArray) {
   const source = sx * m + sy;
   const target = tx * m + ty;
   //   console.log(walls);
-  let walls = new Array(totalNodes);
-  for (let i = 0; i < totalNodes; i++) {
-    walls[i] = -1; // -1 means not blocked
-  }
+  await restart();
 
   for (let i = 0; i < wallArray.length; i++) {
     walls[wallArray[i]] = 1; // 1 denote the blockage or wall
@@ -46,7 +55,7 @@ export default async function dfsWithWalls(sx, sy, tx, ty, wallArray) {
   await getPathDFSWalls(source, target, walls);
   ans.push(source);
   ans.reverse();
-  console.log(ans);
+  // console.log(ans);
   return ans;
 }
 
