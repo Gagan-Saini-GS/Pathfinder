@@ -34,11 +34,27 @@ for (let i = 0; i < n; i++) {
 
 let path = [];
 
+async function restart() {
+  const cells = document.querySelectorAll(".cell");
+
+  for (let i = 0; i < totalNodes; i++) {
+    visited[i] = false;
+    isWeighted[i] = false;
+    dist[i] = 1e9 + 7;
+    walls[i] = -1;
+    cells[i].classList.remove("search-animation");
+    cells[i].classList.remove("path-animation");
+  }
+
+  path = [];
+}
+
 // Function
 export default async function Dijkstra(sx, sy, tx, ty, wallArray, weights) {
   const source = sx * m + sy;
   const target = tx * m + ty;
 
+  await restart();
   for (let i = 0; i < weights.length; i++) {
     isWeighted[weights[i]] = true;
   }
@@ -57,6 +73,7 @@ export default async function Dijkstra(sx, sy, tx, ty, wallArray, weights) {
 async function shortestPath(sv, ev, walls) {
   const cells = document.querySelectorAll(".cell");
   dist[sv] = 0;
+  let targetReached = 0;
 
   let q = [];
   q.push(sv);
@@ -79,12 +96,20 @@ async function shortestPath(sv, ev, walls) {
         animationID = setInterval(() => {
           // cells[node].style.backgroundColor = "#9345c8";
           cells[nextNode].style.backgroundColor = "rgb(175, 216, 248)";
+          cells[nextNode].classList.add("search-animation");
+
           resolve();
         }, 5);
       });
 
       await temp;
       clearInterval(animationID);
+
+      if (nextNode === ev) {
+        visited[ev] = true;
+        targetReached++;
+        break;
+      }
 
       if (isWeighted[nextNode] === true) {
         newDist += 10; // 10 (because it is weighted)
@@ -96,6 +121,10 @@ async function shortestPath(sv, ev, walls) {
       }
 
       visited[nextNode] = true;
+    }
+
+    if (visited[ev] === true && targetReached === 4) {
+      break;
     }
   }
 }

@@ -1,20 +1,21 @@
-// const n = 20;
-// const m = 50;
+const n = 20;
+const m = 50;
 
 export default async function Animation1(source, target, path) {
   //   console.log("Path animation");
+  const cells = document.querySelectorAll(".cell");
+  const totalNodes = n * m;
+
+  for (let i = 0; i < totalNodes; i++) {
+    cells[i].classList.remove("path-animation");
+  }
+
   const allID = [];
 
-  const cells = document.querySelectorAll(".cell");
   for (let i = 0; i < path.length; i++) {
     const animatationID = setInterval(() => {
-      //   const x = Math.floor(path[i] / m);
-      //   const y = path[i] % m;
-      //   if (x === source.x && y === source.y) continue;
-      //   if (x === target.x && y === target.y) continue;
-      //   const node = x * m + y;
-
       cells[path[i]].style.backgroundColor = "rgb(255,254,106)";
+      cells[path[i]].classList.add("path-animation");
     }, i * 50);
 
     allID.push(animatationID);

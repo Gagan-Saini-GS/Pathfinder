@@ -35,16 +35,20 @@ for (let i = 0; i < totalNodes; i++) {
   visited[i] = false;
   seen[i] = -1;
   walls[i] = -1;
+  // cells[i].classList.remove("serach-animation");
 }
 
 let ans = [];
 
 async function restart() {
+  const cells = document.querySelectorAll(".cell");
   for (let i = 0; i < totalNodes; i++) {
     // arr[i] = i;
     visited[i] = false;
     seen[i] = -1;
     walls[i] = -1;
+    cells[i].classList.remove("search-animation");
+    cells[i].classList.remove("path-animation");
   }
 
   ans = [];
@@ -94,8 +98,10 @@ async function getPathBFSWalls(sv, ev, temp) {
       let animationID;
       const temp = new Promise((resolve, reject) => {
         animationID = setInterval(() => {
-          // cells[node].style.backgroundColor = "#9345c8";
+          cells[node].classList.add("search-animation");
           cells[node].style.backgroundColor = "rgb(175, 216, 248)";
+          // cells[node].style.backgroundColor = "#5883d8";
+
           resolve();
         }, 5);
       });

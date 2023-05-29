@@ -267,6 +267,8 @@ export default function Home() {
     }
 
     setWalls([]);
+    setWeights([]);
+    clearWeights();
     console.log("Path Cleared");
   }
 
@@ -288,7 +290,8 @@ export default function Home() {
               <div>Target</div>
             </div>
             <div className="control-item" onClick={markAsWall}>
-              <img src="./images/wall.png" alt="" />
+              {/* <img src="./images/wall.png" alt="" /> */}
+              <div className="wall-block"></div>
               <div>Wall</div>
             </div>
             <div className="control-item" onClick={markAsWeight}>

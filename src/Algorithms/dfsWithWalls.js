@@ -33,10 +33,13 @@ for (let i = 0; i < totalNodes; i++) {
 let ans = [];
 
 async function restart() {
+  const cells = document.querySelectorAll(".cell");
   for (let i = 0; i < totalNodes; i++) {
     // arr[i] = i;
     visited[i] = false;
     walls[i] = -1;
+    cells[i].classList.remove("search-animation");
+    cells[i].classList.remove("path-animation");
   }
 
   ans = [];
@@ -89,6 +92,7 @@ async function getPathDFSWalls(sv, ev, walls) {
       animationID = setInterval(() => {
         // let temp = edges[x][y][i];
         // cells[newNode].style.backgroundColor = "#9345c8";
+        cells[newNode].classList.add("search-animation");
         cells[newNode].style.backgroundColor = "rgb(175, 216, 248)";
         resolve();
       }, 5);

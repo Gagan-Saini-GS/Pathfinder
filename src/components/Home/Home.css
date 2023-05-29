@@ -47,6 +47,13 @@
   margin: 0px 5px;
 }
 
+.wall-block {
+  width: 20%;
+  height: 30px;
+  margin: 0px 5px;
+  background-color: var(--black);
+}
+
 .algo-section {
   width: 40%;
   display: flex;
@@ -106,6 +113,80 @@
 
 .path-nodes {
   color: aliceblue;
+}
+
+.search-animation {
+  animation: search 500ms 1 linear;
+}
+
+.path-animation {
+  animation: pop 1s 1 linear;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.55);
+  }
+
+  50% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes search {
+  0% {
+    background-color: var(--black);
+    border-radius: 50%;
+    transform: scale(0.5);
+  }
+
+  50% {
+    background-color: var(--blue);
+    border-radius: 35%;
+    transform: scale(0.85);
+  }
+
+  75% {
+    background-color: var(--green);
+    border-radius: 20%;
+    transform: scale(1.2);
+  }
+
+  100% {
+    background-color: var(--lightblue);
+    border-radius: 0%;
+    transform: scale(1);
+  }
+}
+
+@keyframes search2 {
+  0% {
+    background-color: rgba(41, 4, 24, 0.75);
+    border-radius: 100%;
+    transform: scale(0.5);
+  }
+
+  50% {
+    background-color: rgba(97, 0, 20, 0.75);
+    border-radius: 35%;
+    transform: scale(0.85);
+  }
+
+  75% {
+    background-color: rgba(216, 5, 141, 0.75);
+    border-radius: 20%;
+    transform: scale(1.2);
+  }
+
+  100% {
+    background-color: rgba(178, 67, 255, 0.75);
+    border-radius: 0%;
+    transform: scale(1);
+  }
 }
 
 @media (min-width: 50px) and (max-width: 500px) {
