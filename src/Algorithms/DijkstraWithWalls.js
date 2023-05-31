@@ -123,9 +123,9 @@ async function shortestPath(sv, ev, walls) {
       visited[nextNode] = true;
     }
 
-    if (visited[ev] === true && targetReached === 4) {
-      break;
-    }
+    // if (visited[ev] === true && targetReached === 4) {
+    //   break;
+    // }
   }
 }
 

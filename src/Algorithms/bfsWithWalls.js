@@ -70,7 +70,6 @@ export default async function bfsWithWalls(sx, sy, tx, ty, walls) {
 }
 
 async function getPathBFSWalls(sv, ev, temp) {
-  console.log("BFS Called");
   const cells = document.querySelectorAll(".cell");
 
   for (let i = 0; i < temp.length; i++) {

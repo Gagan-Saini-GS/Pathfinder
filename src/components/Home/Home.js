@@ -7,6 +7,7 @@ import dfsWithWalls from "../../Algorithms/dfsWithWalls";
 import DijkstraWithWalls from "../../Algorithms/DijkstraWithWalls";
 import swal from "sweetalert";
 import Animation1 from "../../Animations/Animation1";
+import recursiveDivisonMaze from "../../Algorithms/recursiveDivisonMaze";
 
 export default function Home() {
   const n = 20;
@@ -97,7 +98,8 @@ export default function Home() {
     setColor("blue");
   }
 
-  function createMaze() {
+  async function createMaze() {
+    await clearWeightsAndWalls();
     let temp = [];
     for (let i = 0; i < 300; i++) {
       // const a = 0;
@@ -107,8 +109,13 @@ export default function Home() {
     }
 
     const cells = document.querySelectorAll(".cell");
+    const x = source.x * m + source.y;
+    const y = target.x * m + target.y;
 
     for (let i = 0; i < temp.length; i++) {
+      if (temp[i] === x || temp[i] === y) {
+        continue;
+      }
       // cells[temp[i]].style.backgroundImage = `url("./images/wall.png")`;
       cells[temp[i]].style.backgroundColor = "#212a3e";
       cells[temp[i]].style.border = "1px solid #212a3e";
@@ -124,7 +131,15 @@ export default function Home() {
     }
   }
 
-  function createWeightMaze() {
+  // Recursive divison maze
+  async function recursiveDivison() {
+    await clearWeightsAndWalls();
+    const wallArray = await recursiveDivisonMaze(source, target);
+    setWalls(wallArray);
+  }
+
+  async function createWeightMaze() {
+    await clearWeightsAndWalls();
     let temp = [];
     let isWeighted = new Array(n * m);
     const totalNodes = n * m;
@@ -257,7 +272,7 @@ export default function Home() {
     Animation1(source, target, path);
   }
 
-  function clearWeightsAndWalls() {
+  async function clearWeightsAndWalls() {
     const cells = document.querySelectorAll(".cell");
     const totalNodes = n * m;
 
@@ -269,7 +284,21 @@ export default function Home() {
     setWalls([]);
     setWeights([]);
     clearWeights();
-    console.log("Path Cleared");
+  }
+
+  function chooseMaze() {
+    const maze = document.querySelector(".maze-options");
+    console.log(maze);
+
+    console.log(maze.value);
+
+    if (maze.value === "normal-maze") {
+      createMaze();
+    } else if (maze.value === "recursive-divison-maze") {
+      recursiveDivison();
+    } else if (maze.value === "weight-maze") {
+      createWeightMaze();
+    }
   }
 
   return (
@@ -298,14 +327,26 @@ export default function Home() {
               <img src="./images/weight.png" alt="" />
               <div>Weight</div>
             </div>
-            <div className="control-item" onClick={createMaze}>
-              <img src="./images/maze.png" alt="" />
-              <div>Create Maze</div>
-            </div>
-            <div className="control-item" onClick={createWeightMaze}>
-              <img src="./images/maze.png" alt="" />
-              <div>Weight Maze</div>
-            </div>
+            <select className="maze-options" onChange={chooseMaze}>
+              <option value="-">Create Maze</option>
+              <option value="normal-maze">Normal Maze</option>
+              <option value="recursive-divison-maze">
+                Recursive Divison Maze
+              </option>
+              <option value="weight-maze">Weight Maze</option>
+            </select>
+            {/* <div className="control-item" onClick={createMaze}>
+                  <img src="./images/maze.png" alt="" />
+                  <div>Create Maze</div>
+                </div>
+                <div className="control-item" onClick={recursiveDivison}>
+                  <img src="./images/maze.png" alt="" />
+                  <div>Recursive Divison Maze</div>
+                </div>
+                <div className="control-item" onClick={createWeightMaze}>
+                  <img src="./images/maze.png" alt="" />
+                  <div>Weight Maze</div>
+                </div> */}
           </div>
           <div className="algo-section">
             <div className="algo-btn" onClick={bfs}>

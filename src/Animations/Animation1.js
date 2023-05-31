@@ -15,6 +15,7 @@ export default async function Animation1(source, target, path) {
   for (let i = 0; i < path.length; i++) {
     const animatationID = setInterval(() => {
       cells[path[i]].style.backgroundColor = "rgb(255,254,106)";
+      cells[path[i]].style.border = "1px solid rgb(255,254,106)";
       cells[path[i]].classList.add("path-animation");
     }, i * 50);
 
