@@ -1,7 +1,7 @@
 // Preprocessing & Decleration
 
-const n = 20;
-const m = 50;
+const n = 21;
+const m = 51;
 
 const totalNodes = n * m;
 
@@ -73,7 +73,6 @@ export default async function Dijkstra(sx, sy, tx, ty, wallArray, weights) {
 async function shortestPath(sv, ev, walls) {
   const cells = document.querySelectorAll(".cell");
   dist[sv] = 0;
-  let targetReached = 0;
 
   let q = [];
   q.push(sv);
@@ -107,7 +106,7 @@ async function shortestPath(sv, ev, walls) {
 
       if (nextNode === ev) {
         visited[ev] = true;
-        targetReached++;
+        // targetReached++;
         break;
       }
 

@@ -1,5 +1,5 @@
-const n = 20;
-const m = 50;
+const n = 21;
+const m = 51;
 // Previos or Same as BFS
 
 const totalNodes = n * m; // Number of total nodes

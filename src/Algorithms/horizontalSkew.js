@@ -9,12 +9,12 @@ for (let i = 0; i < n; i++) {
   }
 }
 
-export default async function recursiveDivisonMaze(source, target) {
+export default async function horizontalSkew(source, target) {
   const cells = document.querySelectorAll(".cell");
   const sourceNode = source.x * m + source.y;
   const targetNode = target.x * m + target.y;
 
-  addInnerWalls(true, 1, m - 2, 1, n - 2);
+  addInnerWalls();
   addOuterWalls();
 
   const wallArray = [];
@@ -60,47 +60,22 @@ function addOuterWalls() {
   }
 }
 
-function addInnerWalls(h, minX, maxX, minY, maxY) {
-  if (h) {
-    if (maxX - minX < 2) {
-      return;
-    }
-
-    let y = Math.floor(randomNumber(minY, maxY) / 2) * 2;
-    addHWall(minX, maxX, y);
-
-    addInnerWalls(!h, minX, maxX, minY, y - 1);
-    addInnerWalls(!h, minX, maxX, y + 1, maxY);
-  } else {
-    if (maxY - minY < 2) {
-      return;
-    }
-
-    let x = Math.floor(randomNumber(minX, maxX) / 2) * 2;
-    addVWall(minY, maxY, x);
-
-    addInnerWalls(!h, minX, x - 1, minY, maxY);
-    addInnerWalls(!h, x + 1, maxX, minY, maxY);
+function addInnerWalls() {
+  for (let i = 2; i < n - 1; i += 2) {
+    addVerticalLine(i);
   }
 }
 
-function addHWall(minX, maxX, y) {
-  const hole1 = Math.floor(randomNumber(minX, maxX) / 2) * 2 + 1;
-  const hole2 = Math.floor(randomNumber(minX, maxX) / 2) * 2 + 1;
+function addVerticalLine(row) {
+  const hole1 = randomNumber(1, m - 2);
+  const hole2 = randomNumber(1, m - 2);
+  const hole3 = randomNumber(1, m - 2);
+  const hole4 = randomNumber(1, m - 2);
 
-  for (let i = minX; i <= maxX; i++) {
-    if (i === hole1 || i === hole2) arr[y][i] = 0;
-    else arr[y][i] = 1;
-  }
-}
-
-function addVWall(minY, maxY, x) {
-  const hole1 = Math.floor(randomNumber(minY, maxY) / 2) * 2 + 1;
-  const hole2 = Math.floor(randomNumber(minY, maxY) / 2) * 2 + 1;
-
-  for (let i = minY; i <= maxY; i++) {
-    if (i === hole1 || i === hole2) arr[i][x] = 0;
-    else arr[i][x] = 1;
+  for (let j = 1; j < m - 1; j++) {
+    if (j !== hole1 && j !== hole2 && j !== hole3 && j !== hole4) {
+      arr[row][j] = 1;
+    }
   }
 }
 

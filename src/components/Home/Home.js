@@ -8,10 +8,13 @@ import DijkstraWithWalls from "../../Algorithms/DijkstraWithWalls";
 import swal from "sweetalert";
 import Animation1 from "../../Animations/Animation1";
 import recursiveDivisonMaze from "../../Algorithms/recursiveDivisonMaze";
+import verticalSkew from "../../Algorithms/verticalSkew";
+import horizontalSkew from "../../Algorithms/horizontalSkew";
+import spiralMaze from "../../Algorithms/spiralMaze";
 
 export default function Home() {
-  const n = 20;
-  const m = 50;
+  const n = 21;
+  const m = 51;
   let arr = new Array(n);
   for (let i = 0; i < n; i++) {
     arr[i] = new Array(m);
@@ -20,6 +23,7 @@ export default function Home() {
     }
   }
 
+  const totalNodes = n * m;
   const [color, setColor] = useState("red");
   const [source, setSource] = useState({ x: 10, y: 15 });
   const [target, setTarget] = useState({ x: 10, y: 35 });
@@ -46,6 +50,13 @@ export default function Home() {
     const elem = event.target;
     const img = document.createElement("img");
     const cells = document.querySelectorAll(".cell");
+
+    console.log(event.target);
+
+    if (event.target.tagName === "IMG") {
+      return;
+    }
+
     const x = Number(event.target.childNodes[0].childNodes[0].innerText);
     const y = Number(event.target.childNodes[0].childNodes[1].innerText);
     // console.log({ x, y });
@@ -74,6 +85,7 @@ export default function Home() {
       setWalls((prev) => [...prev, wallNode]);
       // img.src = "./images/wall.png";
       cells[wallNode].style.backgroundColor = "#212a3e";
+      cells[wallNode].style.border = "1px solid #212a3e";
     } else if (color === "blue") {
       const weightNode = x * m + y;
       setWeights((prev) => [...prev, weightNode]);
@@ -135,6 +147,24 @@ export default function Home() {
   async function recursiveDivison() {
     await clearWeightsAndWalls();
     const wallArray = await recursiveDivisonMaze(source, target);
+    setWalls(wallArray);
+  }
+
+  async function vertical() {
+    await clearWeightsAndWalls();
+    const wallArray = await verticalSkew(source, target);
+    setWalls(wallArray);
+  }
+
+  async function horizontal() {
+    await clearWeightsAndWalls();
+    const wallArray = await horizontalSkew(source, target);
+    setWalls(wallArray);
+  }
+
+  async function spiral() {
+    await clearWeightsAndWalls();
+    const wallArray = await spiralMaze(source, target);
     setWalls(wallArray);
   }
 
@@ -268,6 +298,10 @@ export default function Home() {
       weights
     );
 
+    if (path.length === 0) {
+      swal("Oops!", "Target not found", "warning");
+    }
+
     // console.log(path);
     Animation1(source, target, path);
   }
@@ -287,17 +321,56 @@ export default function Home() {
   }
 
   function chooseMaze() {
-    const maze = document.querySelector(".maze-options");
-    console.log(maze);
+    const maze = document.querySelector(".maze-options").value;
 
-    console.log(maze.value);
-
-    if (maze.value === "normal-maze") {
+    if (maze === "normal-maze") {
       createMaze();
-    } else if (maze.value === "recursive-divison-maze") {
+    } else if (maze === "recursive-divison-maze") {
       recursiveDivison();
-    } else if (maze.value === "weight-maze") {
+    } else if (maze === "vertical-maze") {
+      vertical();
+    } else if (maze === "horizontal-maze") {
+      horizontal();
+    } else if (maze === "plus-maze") {
+      spiral();
+    } else if (maze === "weight-maze") {
       createWeightMaze();
+    }
+  }
+
+  function chooseAlgo() {
+    const algo = document.querySelector(".algo-options").value;
+
+    if (algo === "bfs") {
+      bfs();
+    } else if (algo === "dfs") {
+      dfs();
+    } else if (algo === "dijkstra") {
+      DijsktraAlgo();
+    }
+  }
+
+  function clearPath() {
+    const cells = document.querySelectorAll(".cell");
+    const isWall = new Array(totalNodes);
+
+    for (let i = 0; i < totalNodes; i++) {
+      isWall[i] = false;
+    }
+
+    for (let i = 0; i < walls.length; i++) {
+      isWall[walls[i]] = true;
+    }
+
+    for (let i = 0; i < totalNodes; i++) {
+      // weight is not considered here because I have to change there
+      // background color to white again weight is a img.
+      if (isWall[i]) {
+        continue;
+      }
+
+      cells[i].style.backgroundColor = "#fbfbfb";
+      cells[i].style.border = "1px solid #5883d8";
     }
   }
 
@@ -327,39 +400,30 @@ export default function Home() {
               <img src="./images/weight.png" alt="" />
               <div>Weight</div>
             </div>
-            <select className="maze-options" onChange={chooseMaze}>
-              <option value="-">Create Maze</option>
+          </div>
+          <div className="algo-section">
+            <select className="maze-options algo-item" onChange={chooseMaze}>
+              <option value="-">Choose Maze</option>
               <option value="normal-maze">Normal Maze</option>
               <option value="recursive-divison-maze">
                 Recursive Divison Maze
               </option>
+              <option value="vertical-maze">Vertical Skew</option>
+              <option value="horizontal-maze">Horizontal Skew</option>
+              <option value="plus-maze">Spiral Maze</option>
               <option value="weight-maze">Weight Maze</option>
             </select>
-            {/* <div className="control-item" onClick={createMaze}>
-                  <img src="./images/maze.png" alt="" />
-                  <div>Create Maze</div>
-                </div>
-                <div className="control-item" onClick={recursiveDivison}>
-                  <img src="./images/maze.png" alt="" />
-                  <div>Recursive Divison Maze</div>
-                </div>
-                <div className="control-item" onClick={createWeightMaze}>
-                  <img src="./images/maze.png" alt="" />
-                  <div>Weight Maze</div>
-                </div> */}
-          </div>
-          <div className="algo-section">
-            <div className="algo-btn" onClick={bfs}>
-              BFS Algo
-            </div>
-            <div className="algo-btn" onClick={dfs}>
-              DFS Algo
-            </div>
-            <div className="algo-btn" onClick={DijsktraAlgo}>
-              Dijkstra Algo
-            </div>
-            <div className="algo-btn" onClick={clearWeightsAndWalls}>
+            <select className="algo-options algo-item" onChange={chooseAlgo}>
+              <option value="-">Choose Algorithm</option>
+              <option value="bfs">BFS</option>
+              <option value="dfs">DFS</option>
+              <option value="dijkstra">Dijkstra</option>
+            </select>
+            <div className="algo-btn algo-item" onClick={clearWeightsAndWalls}>
               Clear Weights & Walls
+            </div>
+            <div className="algo-btn algo-item" onClick={clearPath}>
+              Clear Path
             </div>
           </div>
         </div>
