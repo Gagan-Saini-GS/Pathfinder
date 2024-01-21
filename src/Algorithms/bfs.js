@@ -1,6 +1,4 @@
-const n = 21;
-const m = 51;
-
+import { n, m } from "../config";
 let visited = new Array(n * m);
 const totalNodes = n * m; // Number of total nodes
 // const totalEdges = (n - 1) * m + n * (m - 1); // Number of total edges

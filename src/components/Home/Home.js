@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Home.css";
-// import bfs from "../../Algorithms/bfs";
 import bfsWithWalls from "../../Algorithms/bfsWithWalls";
 import dfsWithWalls from "../../Algorithms/dfsWithWalls";
-// import Dijkstra from "../../Algorithms/Dijsktra";
 import DijkstraWithWalls from "../../Algorithms/DijkstraWithWalls";
 import swal from "sweetalert";
 import Animation1 from "../../Animations/Animation1";
@@ -11,10 +9,12 @@ import recursiveDivisonMaze from "../../Algorithms/recursiveDivisonMaze";
 import verticalSkew from "../../Algorithms/verticalSkew";
 import horizontalSkew from "../../Algorithms/horizontalSkew";
 import spiralMaze from "../../Algorithms/spiralMaze";
+import Button from "../button/button";
+import ReactSelect from "react-select";
+import ItemCard from "../Item-card/item-card";
+import { n, m } from "../../config";
 
 export default function Home() {
-  const n = 21;
-  const m = 51;
   let arr = new Array(n);
   for (let i = 0; i < n; i++) {
     arr[i] = new Array(m);
@@ -22,16 +22,18 @@ export default function Home() {
       arr[i][j] = { i: i, j: j };
     }
   }
-
   const totalNodes = n * m;
+
   const [color, setColor] = useState("red");
-  const [source, setSource] = useState({ x: 10, y: 15 });
-  const [target, setTarget] = useState({ x: 10, y: 35 });
   const [walls, setWalls] = useState([]);
   const [weights, setWeights] = useState([]);
+  const [visualized, setvisualized] = useState(false);
+  const [selectedMaze, setSelectedMaze] = useState("");
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState("");
+  const [source, setSource] = useState({ x: 10, y: 15 });
+  const [target, setTarget] = useState({ x: 10, y: 35 });
 
   useEffect(() => {
-    // console.log("Effect");
     const cells = document.querySelectorAll(".cell");
     const source = 10 * m + 15;
     const target = 10 * m + 35;
@@ -46,25 +48,51 @@ export default function Home() {
     cells[target].appendChild(targetImg);
   }, []);
 
-  function mark(event) {
+  const clearWeights = () => {
+    const cells = document.querySelectorAll(".cell");
+    const len = weights.length;
+    for (let i = 0; i < len; i++) {
+      const elem = cells[weights[i]];
+
+      if (elem.hasChildNodes()) {
+        elem.removeChild(elem.children[1]);
+      }
+    }
+  };
+
+  const clearBoard = () => {
+    setSelectedMaze("");
+    const cells = document.querySelectorAll(".cell");
+    const totalNodes = n * m;
+
+    for (let i = 0; i < totalNodes; i++) {
+      cells[i].style.backgroundColor = "#fbfbfb";
+      cells[i].style.border = "1px solid #5883d8";
+    }
+
+    setWalls([]);
+    setWeights([]);
+    clearWeights();
+  };
+
+  const markItem = (colorText, isCutThrough) => {
+    // If item is cut then user should not able to select it.
+    if (isCutThrough) return;
+    setColor(colorText);
+  };
+
+  const mark = (event) => {
     const elem = event.target;
     const img = document.createElement("img");
     const cells = document.querySelectorAll(".cell");
 
-    console.log(event.target);
-
-    if (event.target.tagName === "IMG") {
-      return;
-    }
+    if (event.target.tagName === "IMG") return;
 
     const x = Number(event.target.childNodes[0].childNodes[0].innerText);
     const y = Number(event.target.childNodes[0].childNodes[1].innerText);
-    // console.log({ x, y });
 
     if (color === "red") {
       const node = cells[source.x * m + source.y];
-      // cells[node];
-
       if (node.hasChildNodes()) {
         node.removeChild(node.children[1]);
       }
@@ -80,10 +108,8 @@ export default function Home() {
       setTarget({ x, y });
     } else if (color === "black") {
       const wallNode = x * m + y;
-      // console.log(wallNode);
 
       setWalls((prev) => [...prev, wallNode]);
-      // img.src = "./images/wall.png";
       cells[wallNode].style.backgroundColor = "#212a3e";
       cells[wallNode].style.border = "1px solid #212a3e";
     } else if (color === "blue") {
@@ -92,29 +118,12 @@ export default function Home() {
       img.src = "./images/weight.png";
     }
     elem.appendChild(img);
-  }
+  };
 
-  function markAsSource() {
-    setColor("red");
-  }
-
-  function markAsTarget() {
-    setColor("green");
-  }
-
-  function markAsWall() {
-    setColor("black");
-  }
-
-  function markAsWeight() {
-    setColor("blue");
-  }
-
-  async function createMaze() {
-    await clearWeightsAndWalls();
+  const createMaze = async () => {
+    clearBoard();
     let temp = [];
     for (let i = 0; i < 300; i++) {
-      // const a = 0;
       const b = n * m;
       let x = Math.floor(b * Math.random());
       temp.push(x);
@@ -128,48 +137,41 @@ export default function Home() {
       if (temp[i] === x || temp[i] === y) {
         continue;
       }
-      // cells[temp[i]].style.backgroundImage = `url("./images/wall.png")`;
       cells[temp[i]].style.backgroundColor = "#212a3e";
       cells[temp[i]].style.border = "1px solid #212a3e";
-      // const elem = cells[temp[i]];
-      // const img = document.createElement("img");
-      // img.src = "./images/wall.png";
-
-      // elem.appendChild(img);
-
       // marking them as wall
       const wallNode = temp[i];
       setWalls((prev) => [...prev, wallNode]);
     }
-  }
+  };
 
   // Recursive divison maze
-  async function recursiveDivison() {
-    await clearWeightsAndWalls();
+  const recursiveDivison = async () => {
+    clearBoard();
     const wallArray = await recursiveDivisonMaze(source, target);
     setWalls(wallArray);
-  }
+  };
 
-  async function vertical() {
-    await clearWeightsAndWalls();
+  const vertical = async () => {
+    clearBoard();
     const wallArray = await verticalSkew(source, target);
     setWalls(wallArray);
-  }
+  };
 
-  async function horizontal() {
-    await clearWeightsAndWalls();
+  const horizontal = async () => {
+    clearBoard();
     const wallArray = await horizontalSkew(source, target);
     setWalls(wallArray);
-  }
+  };
 
-  async function spiral() {
-    await clearWeightsAndWalls();
+  const spiral = async () => {
+    clearBoard();
     const wallArray = await spiralMaze(source, target);
     setWalls(wallArray);
-  }
+  };
 
-  async function createWeightMaze() {
-    await clearWeightsAndWalls();
+  const createWeightMaze = async () => {
+    clearBoard();
     let temp = [];
     let isWeighted = new Array(n * m);
     const totalNodes = n * m;
@@ -181,7 +183,6 @@ export default function Home() {
     isWeighted[target.x * m + target.y] = true;
 
     for (let i = 0; i < 300; i++) {
-      // const a = 0;
       const b = n * m;
       let x = Math.floor(b * Math.random());
       if (isWeighted[x] === false) {
@@ -193,8 +194,6 @@ export default function Home() {
     const cells = document.querySelectorAll(".cell");
 
     for (let i = 0; i < temp.length; i++) {
-      // cells[temp[i]].style.backgroundImage = `url("./images/weight.png")`;
-      // cells[temp[i]].style.backgroundColor = "red";
       const elem = cells[temp[i]];
       const img = document.createElement("img");
       img.src = "./images/weight.png";
@@ -203,33 +202,14 @@ export default function Home() {
 
       // marking them as weight
       const weightNode = temp[i];
-      // setWalls((prev) => [...prev, wallNode]);
       setWeights((prev) => [...prev, weightNode]);
     }
-  }
+  };
 
-  function clearWeights() {
-    const cells = document.querySelectorAll(".cell");
-    const len = weights.length;
-    for (let i = 0; i < len; i++) {
-      const elem = cells[weights[i]];
-
-      if (elem.hasChildNodes()) {
-        elem.removeChild(elem.children[1]);
-      }
-    }
-    // console.log(weights);
-  }
-
-  async function bfs() {
-    // const cells = document.querySelectorAll(".cell");
-    // const path = bfs(source.x, source.y, target.x, target.y);
-    // console.log(path);
-
+  const bfs = async () => {
     // Because BFS is not weighted.
     if (weights.length > 0) clearWeights();
 
-    // console.log("BFS");
     const path = await bfsWithWalls(
       source.x,
       source.y,
@@ -240,24 +220,13 @@ export default function Home() {
 
     if (path.length === 0) {
       swal("Oops!", "Target can't be reached", "warning");
+      return;
     }
 
     Animation1(source, target, path);
+  };
 
-    // for (let i = 0; i < path.length; i++) {
-    //   const x = Math.floor(path[i] / m);
-    //   const y = path[i] % m;
-
-    //   if (x === source.x && y === source.y) continue;
-    //   if (x === target.x && y === target.y) continue;
-
-    //   const node = x * m + y;
-    //   cells[node].style.backgroundColor = "lightgreen";
-    // }
-  }
-
-  async function dfs() {
-    // const cells = document.querySelectorAll(".cell");
+  const dfs = async () => {
     const path = await dfsWithWalls(
       source.x,
       source.y,
@@ -271,24 +240,13 @@ export default function Home() {
 
     if (path.length === 0) {
       swal("Oops!", "Target can't be reached", "warning");
+      return;
     }
 
     Animation1(source, target, path);
-  }
+  };
 
-  async function DijsktraAlgo() {
-    // console.log("Dijsktra called");
-
-    // Without wall
-    // const path = await Dijkstra(
-    //   source.x,
-    //   source.y,
-    //   target.x,
-    //   target.y,
-    //   weights
-    // );
-
-    // With Wall
+  const DijsktraAlgo = async () => {
     const path = await DijkstraWithWalls(
       source.x,
       source.y,
@@ -300,28 +258,15 @@ export default function Home() {
 
     if (path.length === 0) {
       swal("Oops!", "Target not found", "warning");
+      return;
     }
 
-    // console.log(path);
     Animation1(source, target, path);
-  }
+  };
 
-  async function clearWeightsAndWalls() {
-    const cells = document.querySelectorAll(".cell");
-    const totalNodes = n * m;
-
-    for (let i = 0; i < totalNodes; i++) {
-      cells[i].style.backgroundColor = "#fbfbfb";
-      cells[i].style.border = "1px solid #5883d8";
-    }
-
-    setWalls([]);
-    setWeights([]);
-    clearWeights();
-  }
-
-  function chooseMaze() {
-    const maze = document.querySelector(".maze-options").value;
+  const chooseMaze = (selectedOption) => {
+    const maze = selectedOption.value;
+    setSelectedMaze(selectedOption.value);
 
     if (maze === "normal-maze") {
       createMaze();
@@ -336,21 +281,14 @@ export default function Home() {
     } else if (maze === "weight-maze") {
       createWeightMaze();
     }
-  }
+  };
 
-  function chooseAlgo() {
-    const algo = document.querySelector(".algo-options").value;
+  const chooseAlgo = (selectedOption) => {
+    setSelectedAlgorithm(selectedOption.value);
+  };
 
-    if (algo === "bfs") {
-      bfs();
-    } else if (algo === "dfs") {
-      dfs();
-    } else if (algo === "dijkstra") {
-      DijsktraAlgo();
-    }
-  }
-
-  function clearPath() {
+  const clearPath = () => {
+    setSelectedMaze("");
     const cells = document.querySelectorAll(".cell");
     const isWall = new Array(totalNodes);
 
@@ -372,7 +310,98 @@ export default function Home() {
       cells[i].style.backgroundColor = "#fbfbfb";
       cells[i].style.border = "1px solid #5883d8";
     }
-  }
+  };
+
+  const mazeOptions = [
+    {
+      label: "Normal Maze",
+      value: "normal-maze",
+    },
+    {
+      label: "Recusive Divison Maze",
+      value: "recursive-divison-maze",
+    },
+    {
+      label: "Vertical Maze",
+      value: "vertical-maze",
+    },
+    {
+      label: "Horizontal Maze",
+      value: "horizontal-maze",
+    },
+    {
+      label: "Plus Maze",
+      value: "plus-maze",
+    },
+    {
+      label: "Weight Maze",
+      value: "weight-maze",
+    },
+  ];
+
+  const algorithmOptions = [
+    {
+      label: "BFS",
+      value: "bfs",
+    },
+    {
+      label: "DFS",
+      value: "dfs",
+    },
+    {
+      label: "Dijkstra",
+      value: "dijkstra",
+    },
+  ];
+
+  const itemCardOptions = [
+    {
+      id: "source",
+      label: "Source",
+      className: "control-item",
+      colorText: "red",
+      imageSrc: "./images/location.png",
+      altText: "Socuce Image Icon",
+    },
+    {
+      id: "target",
+      label: "Target",
+      className: "control-item",
+      colorText: "green",
+      imageSrc: "./images/bulleye.png",
+      altText: "Target Image Icon",
+    },
+    {
+      id: "wall",
+      label: "Wall",
+      className: "control-item",
+      colorText: "black",
+      imageSrc: "./images/wall.png",
+      altText: "Wall Image Icon",
+    },
+    {
+      id: "weight",
+      label: "Weight",
+      className: `control-item ${
+        (selectedAlgorithm === "bfs" || selectedAlgorithm === "dfs") &&
+        "cut-through"
+      }`,
+      colorText: "blue",
+      imageSrc: "./images/weight.png",
+      altText: "Weight Image Icon",
+    },
+  ];
+
+  const startSolving = () => {
+    setvisualized(true);
+    if (selectedAlgorithm === "bfs") {
+      bfs();
+    } else if (selectedAlgorithm === "dfs") {
+      dfs();
+    } else if (selectedAlgorithm === "dijkstra") {
+      DijsktraAlgo();
+    }
+  };
 
   return (
     <div className="home-container">
@@ -380,56 +409,85 @@ export default function Home() {
       <div className="nav-container">
         <div className="nav-item">
           <div className="heading-section">Path Finder</div>
+          <div className="control-section">
+            {itemCardOptions.map((itemCard) => {
+              return (
+                <ItemCard
+                  key={itemCard.id}
+                  text={itemCard.label}
+                  className={itemCard.className}
+                  onClick={() =>
+                    markItem(
+                      itemCard.colorText,
+                      itemCard.className.includes("cut-through")
+                    )
+                  }
+                  imageSrc={itemCard.imageSrc}
+                  altText={itemCard.altText}
+                />
+              );
+            })}
+          </div>
         </div>
         <div className="nav-item">
-          <div className="control-section">
-            <div className="control-item" onClick={markAsSource}>
-              <img src="./images/location.png" alt="" />
-              <div>Source</div>
+          <div className="flex justify-center items-center">
+            <div style={{ width: "200px", paddingRight: "8px" }}>
+              <ReactSelect
+                options={mazeOptions}
+                onChange={chooseMaze}
+                selectedValue={selectedMaze}
+                placeholder="Select Maze"
+                isMulti={false}
+                isClearable={false}
+              />
             </div>
-            <div className="control-item" onClick={markAsTarget}>
-              <img src="./images/bulleye.png" alt="" />
-              <div>Target</div>
-            </div>
-            <div className="control-item" onClick={markAsWall}>
-              {/* <img src="./images/wall.png" alt="" /> */}
-              <div className="wall-block"></div>
-              <div>Wall</div>
-            </div>
-            <div className="control-item" onClick={markAsWeight}>
-              <img src="./images/weight.png" alt="" />
-              <div>Weight</div>
+            <div style={{ width: "200px", paddingRight: "8px" }}>
+              <ReactSelect
+                options={algorithmOptions}
+                onChange={chooseAlgo}
+                selectedValue={selectedAlgorithm}
+                placeholder="Select Algorithm"
+                isMulti={false}
+                isClearable={false}
+              />
+              {visualized && selectedAlgorithm === "" && (
+                <span className="validation-message">Pick an Algorithm</span>
+              )}
             </div>
           </div>
-          <div className="algo-section">
-            <select className="maze-options algo-item" onChange={chooseMaze}>
-              <option value="-">Choose Maze</option>
-              <option value="normal-maze">Normal Maze</option>
-              <option value="recursive-divison-maze">
-                Recursive Divison Maze
-              </option>
-              <option value="vertical-maze">Vertical Skew</option>
-              <option value="horizontal-maze">Horizontal Skew</option>
-              <option value="plus-maze">Spiral Maze</option>
-              <option value="weight-maze">Weight Maze</option>
-            </select>
-            <select className="algo-options algo-item" onChange={chooseAlgo}>
-              <option value="-">Choose Algorithm</option>
-              <option value="bfs">BFS</option>
-              <option value="dfs">DFS</option>
-              <option value="dijkstra">Dijkstra</option>
-            </select>
-            <div className="algo-btn algo-item" onClick={clearWeightsAndWalls}>
-              Clear Weights & Walls
-            </div>
-            <div className="algo-btn algo-item" onClick={clearPath}>
-              Clear Path
-            </div>
+          <div>
+            <Button
+              ButtonText="Visualize"
+              className="play-button"
+              onClick={startSolving}
+            />
+          </div>
+          <div className="flex justify-center items-center">
+            <Button
+              ButtonText="Clear Path"
+              className="ml-2"
+              onClick={clearPath}
+            />
+            <Button ButtonText="Clear" className="ml-2" onClick={clearBoard} />
           </div>
         </div>
       </div>
 
-      {/* Grid */}
+      {/* My Components */}
+      {/* <Select
+        options={mazeOptions}
+        className="maze-options algo-item"
+        handleChange={chooseMaze}
+        selectedValue={selectedMaze}
+        placeholder="Select a Maze"
+      />
+      <Select
+        options={algorithmOptions}
+        className="maze-options algo-item"
+        handleChange={chooseAlgo}
+        selectedValue={selectedAlgorithm}
+        placeholder="Select a Algorithm"
+      /> */}
 
       {/* <div className="grid-container">
         <div className="cells-container">

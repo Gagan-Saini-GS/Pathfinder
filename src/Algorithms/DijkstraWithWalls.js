@@ -1,8 +1,4 @@
-// Preprocessing & Decleration
-
-const n = 21;
-const m = 51;
-
+import { n, m } from "../config";
 const totalNodes = n * m;
 
 let visited = new Array(totalNodes);

@@ -36,3 +36,24 @@ code {
   --red: #c70039;
   --green: #1abc9c;
 }
+
+.flex {
+  display: flex;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.ml-2 {
+  margin-left: 8px;
+}
+
+.cut-through {
+  text-decoration: line-through;
+  cursor: not-allowed;
+}

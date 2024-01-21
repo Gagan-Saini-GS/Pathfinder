@@ -1,12 +1,7 @@
-const n = 21;
-const m = 51;
-
+import { n, m } from "../config";
 let arr = new Array(n);
 for (let i = 0; i < n; i++) {
-  arr[i] = new Array(m);
-  for (let j = 0; j < m; j++) {
-    arr[i][j] = 0;
-  }
+  arr[i] = new Array(m).fill(0);
 }
 
 export default async function spiralMaze(source, target) {

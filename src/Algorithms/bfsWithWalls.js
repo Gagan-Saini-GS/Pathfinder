@@ -1,7 +1,4 @@
-const n = 21;
-const m = 51;
-// Previos or Same as BFS
-
+import { n, m } from "../config";
 const totalNodes = n * m; // Number of total nodes
 // const totalEdges = (n - 1) * m + n * (m - 1); // Number of total edges
 let visited = new Array(totalNodes);
