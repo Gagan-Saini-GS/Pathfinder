@@ -268,18 +268,31 @@ export default function Home() {
     const maze = selectedOption.value;
     setSelectedMaze(selectedOption.value);
 
-    if (maze === "normal-maze") {
-      createMaze();
-    } else if (maze === "recursive-divison-maze") {
-      recursiveDivison();
-    } else if (maze === "vertical-maze") {
-      vertical();
-    } else if (maze === "horizontal-maze") {
-      horizontal();
-    } else if (maze === "plus-maze") {
-      spiral();
-    } else if (maze === "weight-maze") {
-      createWeightMaze();
+    switch (maze) {
+      case "normal-maze": {
+        createMaze();
+        break;
+      }
+      case "recursive-divison-maze": {
+        recursiveDivison();
+        break;
+      }
+      case "vertical-maze": {
+        vertical();
+        break;
+      }
+      case "horizontal-maze": {
+        horizontal();
+        break;
+      }
+      case "plus-maze": {
+        spiral();
+        break;
+      }
+      case "weight-maze": {
+        createWeightMaze();
+        break;
+      }
     }
   };
 
@@ -394,12 +407,20 @@ export default function Home() {
 
   const startSolving = () => {
     setvisualized(true);
-    if (selectedAlgorithm === "bfs") {
-      bfs();
-    } else if (selectedAlgorithm === "dfs") {
-      dfs();
-    } else if (selectedAlgorithm === "dijkstra") {
-      DijsktraAlgo();
+
+    switch (selectedAlgorithm) {
+      case "bfs": {
+        bfs();
+        break;
+      }
+      case "dfs": {
+        dfs();
+        break;
+      }
+      case "dijkstra": {
+        DijsktraAlgo();
+        break;
+      }
     }
   };
 
