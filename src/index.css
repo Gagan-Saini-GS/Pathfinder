@@ -27,9 +27,10 @@ code {
   --white: #f1f6f9;
   --blue: #394867;
   --lightblue: #5883d8;
-  --purple: #9e45c8;
+  --purple: #d8bfd8;
   --black: #212a3e;
-  --gray: #9ba4b5;
+  --gray: #d3ddf1;
+  --lightgray: #d3d3d3;
 
   /* Accent Colors */
   --yellow: #ffc300;

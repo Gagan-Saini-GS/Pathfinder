@@ -16,7 +16,7 @@ export default async function Animation1(source, target, path) {
       cells[path[i]].style.backgroundColor = "rgb(255,254,106)";
       cells[path[i]].style.border = "1px solid rgb(255,254,106)";
       cells[path[i]].classList.add("path-animation");
-    }, i * 25);
+    }, i * 35);
 
     allID.push(animatationID);
   }
@@ -26,5 +26,5 @@ export default async function Animation1(source, target, path) {
     for (let i = 0; i < allID.length; i++) {
       clearInterval(allID[i]);
     }
-  }, path.length * 25);
+  }, path.length * 35);
 }

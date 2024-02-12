@@ -13,6 +13,7 @@ import Button from "../button/button";
 import ReactSelect from "react-select";
 import ItemCard from "../Item-card/item-card";
 import { n, m } from "../../config";
+import { clearWeights } from "../../utils/clearfunctions";
 
 export default function Home() {
   let arr = new Array(n);
@@ -28,6 +29,8 @@ export default function Home() {
   const [walls, setWalls] = useState([]);
   const [weights, setWeights] = useState([]);
   const [visualized, setvisualized] = useState(false);
+  const [visualizing, setvisualizing] = useState(false);
+  const [wrongPlacement, setWrongPlacement] = useState(false);
   const [selectedMaze, setSelectedMaze] = useState("");
   const [selectedAlgorithm, setSelectedAlgorithm] = useState("");
   const [source, setSource] = useState({ x: 10, y: 15 });
@@ -48,18 +51,6 @@ export default function Home() {
     cells[target].appendChild(targetImg);
   }, []);
 
-  const clearWeights = () => {
-    const cells = document.querySelectorAll(".cell");
-    const len = weights.length;
-    for (let i = 0; i < len; i++) {
-      const elem = cells[weights[i]];
-
-      if (elem.hasChildNodes()) {
-        elem.removeChild(elem.children[1]);
-      }
-    }
-  };
-
   const clearBoard = () => {
     setSelectedMaze("");
     const cells = document.querySelectorAll(".cell");
@@ -72,7 +63,7 @@ export default function Home() {
 
     setWalls([]);
     setWeights([]);
-    clearWeights();
+    clearWeights(weights);
   };
 
   const markItem = (colorText, isCutThrough) => {
@@ -90,6 +81,16 @@ export default function Home() {
 
     const x = Number(event.target.childNodes[0].childNodes[0].innerText);
     const y = Number(event.target.childNodes[0].childNodes[1].innerText);
+
+    const isOnWall = walls.filter((wall) => wall === x * m + y);
+    if (isOnWall.length > 0 && (color === "red" || color === "green")) {
+      swal(
+        "Oops!",
+        `${color === "red" ? "Source" : "Target"} can't be placed on wall.`,
+        "info"
+      );
+      return;
+    }
 
     if (color === "red") {
       const node = cells[source.x * m + source.y];
@@ -208,7 +209,7 @@ export default function Home() {
 
   const bfs = async () => {
     // Because BFS is not weighted.
-    if (weights.length > 0) clearWeights();
+    if (weights.length > 0) clearWeights(weights);
 
     const path = await bfsWithWalls(
       source.x,
@@ -224,6 +225,7 @@ export default function Home() {
     }
 
     Animation1(source, target, path);
+    setvisualizing(false);
   };
 
   const dfs = async () => {
@@ -236,7 +238,7 @@ export default function Home() {
     );
 
     // Because DFS is not weighted.
-    if (weights.length > 0) clearWeights();
+    if (weights.length > 0) clearWeights(weights);
 
     if (path.length === 0) {
       swal("Oops!", "Target can't be reached", "warning");
@@ -244,6 +246,7 @@ export default function Home() {
     }
 
     Animation1(source, target, path);
+    setvisualizing(false);
   };
 
   const DijsktraAlgo = async () => {
@@ -262,6 +265,7 @@ export default function Home() {
     }
 
     Animation1(source, target, path);
+    setvisualizing(false);
   };
 
   const chooseMaze = (selectedOption) => {
@@ -406,6 +410,13 @@ export default function Home() {
   ];
 
   const startSolving = () => {
+    if (selectedAlgorithm === "") {
+      swal("Error!", "Please select an algorithm", "error");
+      return;
+    }
+
+    if (visualized) clearPath();
+    setvisualizing(true);
     setvisualized(true);
 
     switch (selectedAlgorithm) {
@@ -423,6 +434,10 @@ export default function Home() {
       }
     }
   };
+
+  if (visualized && selectedAlgorithm === "") {
+    swal("Error!", "Please select an algorithm", "error");
+  }
 
   return (
     <div className="home-container">
@@ -460,6 +475,7 @@ export default function Home() {
                 placeholder="Select Maze"
                 isMulti={false}
                 isClearable={false}
+                isDisabled={visualizing}
               />
             </div>
             <div style={{ width: "200px", paddingRight: "8px" }}>
@@ -470,10 +486,8 @@ export default function Home() {
                 placeholder="Select Algorithm"
                 isMulti={false}
                 isClearable={false}
+                isDisabled={visualizing}
               />
-              {visualized && selectedAlgorithm === "" && (
-                <span className="validation-message">Pick an Algorithm</span>
-              )}
             </div>
           </div>
           <div>
@@ -481,6 +495,7 @@ export default function Home() {
               ButtonText="Visualize"
               className="play-button"
               onClick={startSolving}
+              isDisabled={visualizing}
             />
           </div>
           <div className="flex justify-center items-center">
@@ -488,8 +503,14 @@ export default function Home() {
               ButtonText="Clear Path"
               className="ml-2"
               onClick={clearPath}
+              isDisabled={visualizing}
             />
-            <Button ButtonText="Clear" className="ml-2" onClick={clearBoard} />
+            <Button
+              ButtonText="Clear"
+              className="ml-2"
+              onClick={clearBoard}
+              isDisabled={visualizing}
+            />
           </div>
         </div>
       </div>
