@@ -46,7 +46,14 @@ async function restart() {
 }
 
 // Function
-export default async function Dijkstra(sx, sy, tx, ty, wallArray, weights) {
+export default async function DijkstraWithWalls(
+  sx,
+  sy,
+  tx,
+  ty,
+  wallArray,
+  weights
+) {
   const source = sx * m + sy;
   const target = tx * m + ty;
 
@@ -61,9 +68,13 @@ export default async function Dijkstra(sx, sy, tx, ty, wallArray, weights) {
 
   await shortestPath(source, target, walls);
   await getPath(source, target);
-  path.reverse();
 
-  return path;
+  if (path.length === 1) {
+    // Means only target is pushed
+    path.pop();
+  }
+
+  return path.reverse();
 }
 
 async function shortestPath(sv, ev, walls) {
@@ -102,7 +113,6 @@ async function shortestPath(sv, ev, walls) {
 
       if (nextNode === ev) {
         visited[ev] = true;
-        // targetReached++;
         break;
       }
 
@@ -125,7 +135,7 @@ async function shortestPath(sv, ev, walls) {
 }
 
 async function getPath(source, target) {
-  let q = [];
+  const q = [];
   path.push(target);
   q.push(target);
 
@@ -145,11 +155,13 @@ async function getPath(source, target) {
       }
     }
 
-    path.push(pathNode);
     if (pathNode === source) {
+      path.push(pathNode);
       break;
     }
-
-    q.push(pathNode);
+    if (pathNode !== -1) {
+      path.push(pathNode);
+      q.push(pathNode);
+    }
   }
 }

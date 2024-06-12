@@ -1,7 +1,7 @@
 .footer-container {
   background-color: var(--black);
   color: var(--white);
-  padding: 20px;
+  padding: 10px;
 }
 
 .footer-item {
@@ -32,26 +32,31 @@
 }
 
 .contact-me {
-  width: 50%;
+  width: 100%;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.contact-me-link {
+  width: 8%;
 }
 
 .contact-me h3 {
   margin: 5px 0px;
+  margin-right: 20px;
 }
 
 .contact-me-icon {
-  width: 4%;
+  width: 20%;
 }
 
 .contact-me-link a {
   display: flex;
   align-items: center;
   text-decoration: none;
+  gap: 10px;
   color: var(--white);
-}
-
-.contact-me-link a div {
-  margin: 0px 10px;
 }
 
 @media (min-width: 50px) and (max-width: 500px) {
@@ -66,10 +71,6 @@
     width: 100%;
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .contact-me {
-    width: 100%;
   }
 
   .contact-me-icon {
@@ -91,18 +92,11 @@
     flex-direction: row;
     justify-content: flex-start;
   }
-
-  .contact-me {
-    width: 100%;
-  }
 }
 
 @media (min-width: 800px) and (max-width: 1000px) {
   .tech-used-container {
     width: 60%;
-  }
-  .contact-me {
-    width: 40%;
   }
 
   .contact-me-icon {

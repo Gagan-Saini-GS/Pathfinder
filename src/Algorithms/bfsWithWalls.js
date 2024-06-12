@@ -54,16 +54,10 @@ async function restart() {
 export default async function bfsWithWalls(sx, sy, tx, ty, walls) {
   const source = sx * m + sy;
   const target = tx * m + ty;
-  //   console.log(walls);
-
   await restart();
 
   await getPathBFSWalls(source, target, walls);
-
-  ans.reverse();
-
-  // console.log(ans);
-  return ans;
+  return ans.reverse();
 }
 
 async function getPathBFSWalls(sv, ev, temp) {
@@ -72,8 +66,6 @@ async function getPathBFSWalls(sv, ev, temp) {
   for (let i = 0; i < temp.length; i++) {
     walls[temp[i]] = 1; // 1 denote the blockage or wall
   }
-
-  //   console.log(walls);
 
   let pendingVertices = []; // Works as queue
 
@@ -105,7 +97,6 @@ async function getPathBFSWalls(sv, ev, temp) {
       await temp;
       clearInterval(animationID);
 
-      // console.log("Called");
       if (node === ev) {
         // frontvertices is the parent the node
         seen[node] = frontVertices;

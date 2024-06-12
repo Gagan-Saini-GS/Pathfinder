@@ -46,7 +46,7 @@ async function restart() {
 export default async function dfsWithWalls(sx, sy, tx, ty, wallArray) {
   const source = sx * m + sy;
   const target = tx * m + ty;
-  //   console.log(walls);
+
   await restart();
 
   for (let i = 0; i < wallArray.length; i++) {
@@ -54,9 +54,13 @@ export default async function dfsWithWalls(sx, sy, tx, ty, wallArray) {
   }
 
   await getPathDFSWalls(source, target, walls);
-  ans.push(source);
+
+  if (ans.length > 0) {
+    ans.push(source);
+  }
+
   ans.reverse();
-  // console.log(ans);
+
   return ans;
 }
 
@@ -74,8 +78,6 @@ async function getPathDFSWalls(sv, ev, walls) {
   const x = Math.floor(sv / m);
   const y = sv % m;
 
-  //   console.log(sv);
-
   visited[sv] = true;
 
   for (let i = 0; i < edges[x][y].length; i++) {
@@ -88,8 +90,6 @@ async function getPathDFSWalls(sv, ev, walls) {
     let animationID;
     const temp = new Promise((resolve, reject) => {
       animationID = setInterval(() => {
-        // let temp = edges[x][y][i];
-        // cells[newNode].style.backgroundColor = "#9345c8";
         cells[newNode].classList.add("search-animation");
         cells[newNode].style.backgroundColor = "rgb(175, 216, 248)";
         resolve();

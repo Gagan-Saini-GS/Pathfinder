@@ -1,19 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./Home.css";
-import bfsWithWalls from "../../Algorithms/bfsWithWalls";
-import dfsWithWalls from "../../Algorithms/dfsWithWalls";
-import DijkstraWithWalls from "../../Algorithms/DijkstraWithWalls";
 import swal from "sweetalert";
-import Animation1 from "../../Animations/Animation1";
-import recursiveDivisonMaze from "../../Algorithms/recursiveDivisonMaze";
-import verticalSkew from "../../Algorithms/verticalSkew";
-import horizontalSkew from "../../Algorithms/horizontalSkew";
-import spiralMaze from "../../Algorithms/spiralMaze";
-import Button from "../button/button";
-import ReactSelect from "react-select";
-import ItemCard from "../Item-card/item-card";
 import { n, m } from "../../config";
-import { clearWeights } from "../../utils/clearfunctions";
+import Navbar from "../Navbar/Navbar";
 
 export default function Home() {
   let arr = new Array(n);
@@ -23,530 +12,87 @@ export default function Home() {
       arr[i][j] = { i: i, j: j };
     }
   }
-  const totalNodes = n * m;
 
-  const [color, setColor] = useState("red");
+  const [placementType, setPlacementType] = useState("source");
   const [walls, setWalls] = useState([]);
   const [weights, setWeights] = useState([]);
-  const [visualized, setvisualized] = useState(false);
-  const [visualizing, setvisualizing] = useState(false);
-  const [wrongPlacement, setWrongPlacement] = useState(false);
-  const [selectedMaze, setSelectedMaze] = useState("");
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState("");
+
   const [source, setSource] = useState({ x: 10, y: 15 });
   const [target, setTarget] = useState({ x: 10, y: 35 });
 
-  useEffect(() => {
-    const cells = document.querySelectorAll(".cell");
-    const source = 10 * m + 15;
-    const target = 10 * m + 35;
+  const checkForWall = (cell, nodeType) => {
+    const isCellWall = walls.filter((wall) => {
+      return wall === cell.i * m + cell.j;
+    });
 
-    const sourceImg = document.createElement("img");
-    sourceImg.src = "./images/location.png";
-
-    const targetImg = document.createElement("img");
-    targetImg.src = "./images/bulleye.png";
-
-    cells[source].appendChild(sourceImg);
-    cells[target].appendChild(targetImg);
-  }, []);
-
-  const clearBoard = () => {
-    setSelectedMaze("");
-    const cells = document.querySelectorAll(".cell");
-    const totalNodes = n * m;
-
-    for (let i = 0; i < totalNodes; i++) {
-      cells[i].style.backgroundColor = "#fbfbfb";
-      cells[i].style.border = "1px solid #5883d8";
+    if (isCellWall.length > 0) {
+      swal("Error!", `${nodeType} can't be a wall`, "error");
+      return true;
     }
 
-    setWalls([]);
-    setWeights([]);
-    clearWeights(weights);
+    return false;
   };
 
-  const markItem = (colorText, isCutThrough) => {
-    // If item is cut then user should not able to select it.
-    if (isCutThrough) return;
-    setColor(colorText);
+  const onDrag = (e, cell) => {
+    if (cell.i == source.x && cell.j == source.y) {
+      setPlacementType("source");
+    } else if (cell.i == target.x && cell.j == target.y) {
+      setPlacementType("target");
+    } else if (placementType !== "wall") {
+      setPlacementType("wall");
+    }
   };
 
-  const mark = (event) => {
-    const elem = event.target;
-    const img = document.createElement("img");
+  const onDrop = (event, cell) => {
     const cells = document.querySelectorAll(".cell");
 
-    if (event.target.tagName === "IMG") return;
-
-    const x = Number(event.target.childNodes[0].childNodes[0].innerText);
-    const y = Number(event.target.childNodes[0].childNodes[1].innerText);
-
-    const isOnWall = walls.filter((wall) => wall === x * m + y);
-    if (isOnWall.length > 0 && (color === "red" || color === "green")) {
-      swal(
-        "Oops!",
-        `${color === "red" ? "Source" : "Target"} can't be placed on wall.`,
-        "info"
-      );
-      return;
-    }
-
-    if (color === "red") {
-      const node = cells[source.x * m + source.y];
-      if (node.hasChildNodes()) {
-        node.removeChild(node.children[1]);
-      }
-      img.src = "./images/location.png";
-      setSource({ x, y });
-    } else if (color === "green") {
-      const node = cells[target.x * m + target.y];
-      if (node.hasChildNodes()) {
-        node.removeChild(node.children[1]);
-      }
-
-      img.src = "./images/bulleye.png";
-      setTarget({ x, y });
-    } else if (color === "black") {
-      const wallNode = x * m + y;
+    if (placementType === "source" && !checkForWall(cell, "Source")) {
+      setSource({ x: cell.i, y: cell.j });
+    } else if (placementType === "target" && !checkForWall(cell, "Target")) {
+      setTarget({ x: cell.i, y: cell.j });
+    } else if (placementType === "wall") {
+      const wallNode = cell.i * m + cell.j;
 
       setWalls((prev) => [...prev, wallNode]);
       cells[wallNode].style.backgroundColor = "#212a3e";
       cells[wallNode].style.border = "1px solid #212a3e";
-    } else if (color === "blue") {
-      const weightNode = x * m + y;
-      setWeights((prev) => [...prev, weightNode]);
-      img.src = "./images/weight.png";
     }
-    elem.appendChild(img);
   };
 
-  const createMaze = async () => {
-    clearBoard();
-    let temp = [];
-    for (let i = 0; i < 300; i++) {
-      const b = n * m;
-      let x = Math.floor(b * Math.random());
-      temp.push(x);
+  const onDragOver = (e, cell) => {
+    e.preventDefault();
+
+    // Can't create wall on source & target
+    if (
+      (cell.i === source.x && cell.j === source.y) ||
+      (cell.i === target.x && cell.j === target.y)
+    ) {
+      return;
     }
 
-    const cells = document.querySelectorAll(".cell");
-    const x = source.x * m + source.y;
-    const y = target.x * m + target.y;
+    if (placementType === "wall") {
+      const cells = document.querySelectorAll(".cell");
+      const wallNode = cell.i * m + cell.j;
 
-    for (let i = 0; i < temp.length; i++) {
-      if (temp[i] === x || temp[i] === y) {
-        continue;
-      }
-      cells[temp[i]].style.backgroundColor = "#212a3e";
-      cells[temp[i]].style.border = "1px solid #212a3e";
-      // marking them as wall
-      const wallNode = temp[i];
       setWalls((prev) => [...prev, wallNode]);
+      cells[wallNode].style.backgroundColor = "#212a3e";
+      cells[wallNode].style.border = "1px solid #212a3e";
     }
   };
-
-  // Recursive divison maze
-  const recursiveDivison = async () => {
-    clearBoard();
-    const wallArray = await recursiveDivisonMaze(source, target);
-    setWalls(wallArray);
-  };
-
-  const vertical = async () => {
-    clearBoard();
-    const wallArray = await verticalSkew(source, target);
-    setWalls(wallArray);
-  };
-
-  const horizontal = async () => {
-    clearBoard();
-    const wallArray = await horizontalSkew(source, target);
-    setWalls(wallArray);
-  };
-
-  const spiral = async () => {
-    clearBoard();
-    const wallArray = await spiralMaze(source, target);
-    setWalls(wallArray);
-  };
-
-  const createWeightMaze = async () => {
-    clearBoard();
-    let temp = [];
-    let isWeighted = new Array(n * m);
-    const totalNodes = n * m;
-
-    for (let i = 0; i < totalNodes; i++) {
-      isWeighted[i] = false;
-    }
-    isWeighted[source.x * m + source.y] = true;
-    isWeighted[target.x * m + target.y] = true;
-
-    for (let i = 0; i < 300; i++) {
-      const b = n * m;
-      let x = Math.floor(b * Math.random());
-      if (isWeighted[x] === false) {
-        isWeighted[x] = true;
-        temp.push(x);
-      }
-    }
-
-    const cells = document.querySelectorAll(".cell");
-
-    for (let i = 0; i < temp.length; i++) {
-      const elem = cells[temp[i]];
-      const img = document.createElement("img");
-      img.src = "./images/weight.png";
-
-      elem.appendChild(img);
-
-      // marking them as weight
-      const weightNode = temp[i];
-      setWeights((prev) => [...prev, weightNode]);
-    }
-  };
-
-  const bfs = async () => {
-    // Because BFS is not weighted.
-    if (weights.length > 0) clearWeights(weights);
-
-    const path = await bfsWithWalls(
-      source.x,
-      source.y,
-      target.x,
-      target.y,
-      walls
-    );
-
-    if (path.length === 0) {
-      swal("Oops!", "Target can't be reached", "warning");
-      return;
-    }
-
-    Animation1(source, target, path);
-    setvisualizing(false);
-  };
-
-  const dfs = async () => {
-    const path = await dfsWithWalls(
-      source.x,
-      source.y,
-      target.x,
-      target.y,
-      walls
-    );
-
-    // Because DFS is not weighted.
-    if (weights.length > 0) clearWeights(weights);
-
-    if (path.length === 0) {
-      swal("Oops!", "Target can't be reached", "warning");
-      return;
-    }
-
-    Animation1(source, target, path);
-    setvisualizing(false);
-  };
-
-  const DijsktraAlgo = async () => {
-    const path = await DijkstraWithWalls(
-      source.x,
-      source.y,
-      target.x,
-      target.y,
-      walls,
-      weights
-    );
-
-    if (path.length === 0) {
-      swal("Oops!", "Target not found", "warning");
-      return;
-    }
-
-    Animation1(source, target, path);
-    setvisualizing(false);
-  };
-
-  const chooseMaze = (selectedOption) => {
-    const maze = selectedOption.value;
-    setSelectedMaze(selectedOption.value);
-
-    switch (maze) {
-      case "normal-maze": {
-        createMaze();
-        break;
-      }
-      case "recursive-divison-maze": {
-        recursiveDivison();
-        break;
-      }
-      case "vertical-maze": {
-        vertical();
-        break;
-      }
-      case "horizontal-maze": {
-        horizontal();
-        break;
-      }
-      case "plus-maze": {
-        spiral();
-        break;
-      }
-      case "weight-maze": {
-        createWeightMaze();
-        break;
-      }
-    }
-  };
-
-  const chooseAlgo = (selectedOption) => {
-    setSelectedAlgorithm(selectedOption.value);
-  };
-
-  const clearPath = () => {
-    setSelectedMaze("");
-    const cells = document.querySelectorAll(".cell");
-    const isWall = new Array(totalNodes);
-
-    for (let i = 0; i < totalNodes; i++) {
-      isWall[i] = false;
-    }
-
-    for (let i = 0; i < walls.length; i++) {
-      isWall[walls[i]] = true;
-    }
-
-    for (let i = 0; i < totalNodes; i++) {
-      // weight is not considered here because I have to change there
-      // background color to white again weight is a img.
-      if (isWall[i]) {
-        continue;
-      }
-
-      cells[i].style.backgroundColor = "#fbfbfb";
-      cells[i].style.border = "1px solid #5883d8";
-    }
-  };
-
-  const mazeOptions = [
-    {
-      label: "Normal Maze",
-      value: "normal-maze",
-    },
-    {
-      label: "Recusive Divison Maze",
-      value: "recursive-divison-maze",
-    },
-    {
-      label: "Vertical Maze",
-      value: "vertical-maze",
-    },
-    {
-      label: "Horizontal Maze",
-      value: "horizontal-maze",
-    },
-    {
-      label: "Plus Maze",
-      value: "plus-maze",
-    },
-    {
-      label: "Weight Maze",
-      value: "weight-maze",
-    },
-  ];
-
-  const algorithmOptions = [
-    {
-      label: "BFS",
-      value: "bfs",
-    },
-    {
-      label: "DFS",
-      value: "dfs",
-    },
-    {
-      label: "Dijkstra",
-      value: "dijkstra",
-    },
-  ];
-
-  const itemCardOptions = [
-    {
-      id: "source",
-      label: "Source",
-      className: "control-item",
-      colorText: "red",
-      imageSrc: "./images/location.png",
-      altText: "Socuce Image Icon",
-    },
-    {
-      id: "target",
-      label: "Target",
-      className: "control-item",
-      colorText: "green",
-      imageSrc: "./images/bulleye.png",
-      altText: "Target Image Icon",
-    },
-    {
-      id: "wall",
-      label: "Wall",
-      className: "control-item",
-      colorText: "black",
-      imageSrc: "./images/wall.png",
-      altText: "Wall Image Icon",
-    },
-    {
-      id: "weight",
-      label: "Weight",
-      className: `control-item ${
-        (selectedAlgorithm === "bfs" || selectedAlgorithm === "dfs") &&
-        "cut-through"
-      }`,
-      colorText: "blue",
-      imageSrc: "./images/weight.png",
-      altText: "Weight Image Icon",
-    },
-  ];
-
-  const startSolving = () => {
-    if (selectedAlgorithm === "") {
-      swal("Error!", "Please select an algorithm", "error");
-      return;
-    }
-
-    if (visualized) clearPath();
-    setvisualizing(true);
-    setvisualized(true);
-
-    switch (selectedAlgorithm) {
-      case "bfs": {
-        bfs();
-        break;
-      }
-      case "dfs": {
-        dfs();
-        break;
-      }
-      case "dijkstra": {
-        DijsktraAlgo();
-        break;
-      }
-    }
-  };
-
-  if (visualized && selectedAlgorithm === "") {
-    swal("Error!", "Please select an algorithm", "error");
-  }
 
   return (
     <div className="home-container">
       {/* Navbar */}
-      <div className="nav-container">
-        <div className="nav-item">
-          <div className="heading-section">Path Finder</div>
-          <div className="control-section">
-            {itemCardOptions.map((itemCard) => {
-              return (
-                <ItemCard
-                  key={itemCard.id}
-                  text={itemCard.label}
-                  className={itemCard.className}
-                  onClick={() =>
-                    markItem(
-                      itemCard.colorText,
-                      itemCard.className.includes("cut-through")
-                    )
-                  }
-                  imageSrc={itemCard.imageSrc}
-                  altText={itemCard.altText}
-                />
-              );
-            })}
-          </div>
-        </div>
-        <div className="nav-item">
-          <div className="flex justify-center items-center">
-            <div style={{ width: "200px", paddingRight: "8px" }}>
-              <ReactSelect
-                options={mazeOptions}
-                onChange={chooseMaze}
-                selectedValue={selectedMaze}
-                placeholder="Select Maze"
-                isMulti={false}
-                isClearable={false}
-                isDisabled={visualizing}
-              />
-            </div>
-            <div style={{ width: "200px", paddingRight: "8px" }}>
-              <ReactSelect
-                options={algorithmOptions}
-                onChange={chooseAlgo}
-                selectedValue={selectedAlgorithm}
-                placeholder="Select Algorithm"
-                isMulti={false}
-                isClearable={false}
-                isDisabled={visualizing}
-              />
-            </div>
-          </div>
-          <div>
-            <Button
-              ButtonText="Visualize"
-              className="play-button"
-              onClick={startSolving}
-              isDisabled={visualizing}
-            />
-          </div>
-          <div className="flex justify-center items-center">
-            <Button
-              ButtonText="Clear Path"
-              className="ml-2"
-              onClick={clearPath}
-              isDisabled={visualizing}
-            />
-            <Button
-              ButtonText="Clear"
-              className="ml-2"
-              onClick={clearBoard}
-              isDisabled={visualizing}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* My Components */}
-      {/* <Select
-        options={mazeOptions}
-        className="maze-options algo-item"
-        handleChange={chooseMaze}
-        selectedValue={selectedMaze}
-        placeholder="Select a Maze"
+      <Navbar
+        placementType={placementType}
+        setPlacementType={setPlacementType}
+        walls={walls}
+        setWalls={setWalls}
+        weights={weights}
+        setWeights={setWeights}
+        source={source}
+        target={target}
       />
-      <Select
-        options={algorithmOptions}
-        className="maze-options algo-item"
-        handleChange={chooseAlgo}
-        selectedValue={selectedAlgorithm}
-        placeholder="Select a Algorithm"
-      /> */}
-
-      {/* <div className="grid-container">
-        <div className="cells-container">
-          {arr.map((item, row) => {
-            return item.map((cell, column) => {
-              return (
-                <div key={column} className="cell" onClick={mark}>
-                  <div className="value">
-                    <span className="value-x">{cell.i}</span>
-                    <span className="value-y">{cell.j}</span>
-                  </div>
-                </div>
-              );
-            });
-          })}
-        </div>
-      </div> */}
 
       {/* Table can be used in responsivness */}
       {/* Thats why I changed a normal div structure to table */}
@@ -558,11 +104,26 @@ export default function Home() {
                 <tr key={row}>
                   {item.map((cell, column) => {
                     return (
-                      <td key={column} className="cell" onClick={mark}>
-                        <div className="value">
-                          <span className="value-x">{cell.i}</span>
-                          <span className="value-y">{cell.j}</span>
-                        </div>
+                      <td
+                        key={column}
+                        className="cell"
+                        draggable={true}
+                        onDrag={(e) => onDrag(e, cell)}
+                        onDragOver={(e) => {
+                          onDragOver(e, cell);
+                        }}
+                        onDrop={(e) => onDrop(e, cell)}
+                      >
+                        {cell.i === source.x && cell.j === source.y && (
+                          <img src="./images/location.png" alt="source" />
+                        )}
+                        {cell.i === target.x && cell.j === target.y && (
+                          <img src="./images/bulleye.png" alt="target" />
+                        )}
+
+                        {weights.includes(cell.i * m + cell.j) && (
+                          <img src="./images/weight.png" alt="Weight" />
+                        )}
                       </td>
                     );
                   })}
